@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEPO | 政策エビデンス推進研究センター | 大阪大学大学院国際公共政策研究科</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #333;
+            line-height: 1.8;
+        }
+        .header-navy {
+            background-color: #003366; 
+        }
+        .text-navy {
+            color: #003366;
+        }
+        .bg-navy-light {
+            background-color: #f0f4f8;
+        }
+        .border-navy {
+            border-color: #003366;
+        }
+        /* メニューアニメーション */
+        #main-menu {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #main-menu.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .hero-overlay {
+            background: linear-gradient(rgba(0,51,102,0.7), rgba(0,51,102,0.4));
+        }
+
+        /* スポイラー（アコーディオン）スタイル */
+        .spoiler-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .spoiler-item.active .spoiler-content {
+            max-height: 3000px;
+            padding-bottom: 1.5rem;
+        }
+        .spoiler-item.active .spoiler-icon {
+            transform: rotate(180deg);
+        }
+
+        /* 画像付きバナーボックスのスタイル */
+        .banner-box {
+            position: relative;
+            height: 240px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        @media (min-width: 1024px) {
+            .banner-box {
+                height: 300px;
+            }
+        }
+        .banner-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .banner-box img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 15px;
+        }
+        .cepo-logo-circle {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 31, 63, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .cepo-logo-circle {
+                width: 90px;
+                height: 90px;
+            }
+        }
+        .banner-text-bottom {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            font-size: 0.75rem;
+            padding: 0 12px;
+            line-height: 1.5;
+        }
+        @media (min-width: 768px) {
+            .banner-text-bottom {
+                bottom: 25px;
+                font-size: 1rem;
+            }
+        }
+
+        /* ページ切り替えの表示制御 */
+        .page-view {
+            display: none;
+        }
+        .page-view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- ナビゲーションバー -->
+    <header class="header-navy text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                <div class="border-l-2 border-white/40 pl-3">
+                    <p class="text-[10px] md:text-xs tracking-widest opacity-80 leading-none mb-1 uppercase">Osaka University / OSIPP</p>
+                    <h1 class="text-lg md:text-xl font-bold tracking-tight leading-none">
+                        CEPO <span class="font-normal text-xs md:text-base ml-1 md:ml-2">政策エビデンス推進研究センター</span>
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- 三本線メニューボタン -->
+            <button id="menu-btn" class="p-2 focus:outline-none flex items-center space-x-3 group">
+                <span class="text-xs font-bold tracking-widest hidden sm:inline">MENU</span>
+                <div class="relative w-6 h-5">
+                    <span id="bar1" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-0"></span>
+                    <span id="bar2" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-2"></span>
+                    <span id="bar3" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-4"></span>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- 展開メニュー（8項目） -->
+    <div id="main-menu" class="fixed inset-x-0 bg-slate-900 text-white z-40 border-t border-slate-700 shadow-2xl overflow-y-auto max-h-[85vh]">
+        <div class="container mx-auto px-6 py-12">
+            <nav class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-4">
+                <div class="flex flex-col">
+                    <a href="index.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">01</span> CepoHome
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">02</span> 活動内容
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="publications.html" class="text-sm text-gray-400 hover:text-white transition">Publications</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">ランチセミナーのお知らせ</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">過去のランチセミナー</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">Discussion Papers</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">研究協力プロジェクト</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">受賞</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">CEPOイベント</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">03</span> メンバー
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">04</span> 入学を希望される方へ
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">OSIPPの教育</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">応募について</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">CEPOサポートサービス</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">理工系の方へ</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">05</span> EBPMのデータ
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">06</span> リンク集
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>

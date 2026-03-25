@@ -1,1 +1,625 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEPO | 政策エビデンス推進研究センター | 大阪大学大学院国際公共政策研究科</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #333;
+            line-height: 1.8;
+        }
+        .header-navy {
+            background-color: #003366; 
+        }
+        .text-navy {
+            color: #003366;
+        }
+        .bg-navy-light {
+            background-color: #f0f4f8;
+        }
+        .border-navy {
+            border-color: #003366;
+        }
+        /* メニューアニメーション */
+        #main-menu {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #main-menu.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .hero-overlay {
+            background: linear-gradient(rgba(0,51,102,0.7), rgba(0,51,102,0.4));
+        }
 
+        /* スポイラー（アコーディオン）スタイル */
+        .spoiler-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .spoiler-item.active .spoiler-content {
+            max-height: 3000px;
+            padding-bottom: 1.5rem;
+        }
+        .spoiler-item.active .spoiler-icon {
+            transform: rotate(180deg);
+        }
+
+        /* 画像付きバナーボックスのスタイル */
+        .banner-box {
+            position: relative;
+            height: 240px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        @media (min-width: 1024px) {
+            .banner-box {
+                height: 300px;
+            }
+        }
+        .banner-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .banner-box img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 15px;
+        }
+        .cepo-logo-circle {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 31, 63, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .cepo-logo-circle {
+                width: 90px;
+                height: 90px;
+            }
+        }
+        .banner-text-bottom {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            font-size: 0.75rem;
+            padding: 0 12px;
+            line-height: 1.5;
+        }
+        @media (min-width: 768px) {
+            .banner-text-bottom {
+                bottom: 25px;
+                font-size: 1rem;
+            }
+        }
+
+        /* ページ切り替えの表示制御 */
+        .page-view {
+            display: none;
+        }
+        .page-view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- ナビゲーションバー -->
+    <header class="header-navy text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                <div class="border-l-2 border-white/40 pl-3">
+                    <p class="text-[10px] md:text-xs tracking-widest opacity-80 leading-none mb-1 uppercase">Osaka University / OSIPP</p>
+                    <h1 class="text-lg md:text-xl font-bold tracking-tight leading-none">
+                        CEPO <span class="font-normal text-xs md:text-base ml-1 md:ml-2">政策エビデンス推進研究センター</span>
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- 三本線メニューボタン -->
+            <button id="menu-btn" class="p-2 focus:outline-none flex items-center space-x-3 group">
+                <span class="text-xs font-bold tracking-widest hidden sm:inline">MENU</span>
+                <div class="relative w-6 h-5">
+                    <span id="bar1" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-0"></span>
+                    <span id="bar2" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-2"></span>
+                    <span id="bar3" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-4"></span>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- 展開メニュー（8項目） -->
+    <div id="main-menu" class="fixed inset-x-0 bg-slate-900 text-white z-40 border-t border-slate-700 shadow-2xl overflow-y-auto max-h-[85vh]">
+        <div class="container mx-auto px-6 py-12">
+            <nav class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-4">
+                <div class="flex flex-col">
+                    <a href="index.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">01</span> CepoHome
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">02</span> 活動内容
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="publications.html" class="text-sm text-gray-400 hover:text-white transition">Publications</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1nTMQU5SLe1nx_VV4HUmrQhgtqkUtfwCLIfmnBXL6TPw/edit?gid=139518486#gid=139518486" target="_blank" class="text-sm text-gray-400 hover:text-white transition">ランチセミナーのお知らせ</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">過去のランチセミナー</a>
+                        <a href="discussion papers.html" class="text-sm text-gray-400 hover:text-white transition">Discussion Papers</a>
+                        <a href="research project.html" class="text-sm text-gray-400 hover:text-white transition">研究協力プロジェクト</a>
+                        <a href="awards.html" class="text-sm text-gray-400 hover:text-white transition">受賞</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">CEPOイベント</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">03</span> メンバー
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">04</span> 入学を希望される方へ
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">OSIPPの教育</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">応募について</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">CEPOサポートサービス</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">理工系の方へ</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="EBPM data.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">05</span> EBPMのデータ
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">06</span> リンク集
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+<!-- Main Content Area -->
+     <main>
+        <!-- ヒーローセクション -->
+        <section class="relative h-[250px] md:h-[300px] flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 hero-overlay"></div>
+            </div>
+            <div class="container mx-auto px-4 relative z-10 text-center text-white">
+                <p class="text-xs md:text-sm font-bold tracking-[0.4em] mb-4 uppercase opacity-80">Center for Evidence-based Policy</p>
+                <h2 class="text-2xl md:text-5xl font-bold mb-2 leading-tight">Awards</h2>
+                <p class="text-sm md:text-lg font-medium opacity-90">当センター所属研究者による受賞実績</p>
+            </div>
+        </section>
+
+        <section class="py-12 md:py-20 bg-white">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <div class="mb-12">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-gray-100 pb-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-navy">受賞実績の一覧</h3>
+                            <p class="text-sm text-gray-500 mt-1">所属メンバーの研究活動に対する評価と受賞の記録です</p>
+                        </div>
+                        
+                        <div class="relative w-full md:w-1/2 lg:w-1/3">
+                            <input type="text" id="award-search-input" placeholder="氏名 賞の名称などで検索" class="w-full px-5 py-3 border border-gray-200 rounded-full focus:outline-none focus:border-blue-500 text-sm md:text-base text-gray-700 bg-gray-50 transition-all">
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b-2 border-gray-100 text-navy uppercase tracking-wider text-xs md:text-sm">
+                                    <th class="p-4 font-bold w-16">Year</th>
+                                    <th class="p-4 font-bold min-w-[150px]">Recipient</th>
+                                    <th class="p-4 font-bold min-w-[300px]">Award Name</th>
+                                    <th class="p-4 font-bold min-w-[150px]">Organization</th>
+                                </tr>
+                            </thead>
+                            <tbody id="award-tbody">
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2024</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">山下 拓朗</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">第20回（令和5年度）日本学士院学術奨励賞</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">日本学士院</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2024</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">二羽 秀和</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">2023年度大銀協フォーラム研究支援 特別賞</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">大阪銀行協会</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2023</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">山下 拓朗</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">第20回日本学術振興会賞</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">日本学術振興会</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2023</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">室岡 健志</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">第66回（2023年度）日経・経済図書文化賞</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">日本経済新聞社・日本経済研究センター</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2022</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">室岡 健志</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">第18回日本学術振興会賞</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">日本学術振興会</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2020</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">Gavrilova, E., Kamada, T., & Zoutman, F.</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">2019 Austin Robinson Memorial Prize</div>
+                                        <p class="text-xs text-gray-500 leading-relaxed">Is Legal Pot Crippling Mexican Drug Trafficking Organizations?: The Effect of Medical Marijuana Laws on US Crime</p>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">Royal Economic Society</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2019</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">Takuma Kamada</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">Gene Carte Student Paper Competition, 2nd Place</div>
+                                        <p class="text-xs text-gray-500 leading-relaxed">The Emergence of Crack Cocaine, the Nature of Violence, and Enduring Effects on Suburbanization</p>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">American Society of Criminology</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2019</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">室岡 健志</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">第2回行動経済学会ヤフー株式会社優秀論文賞</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">行動経済学会</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2019</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">松林 哲也</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">大阪大学賞</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">大阪大学</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2019</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">松林 哲也</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">第15回日本学術振興会賞</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">日本学術振興会</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2018</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">室岡 健志</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">大阪大学賞（若手教員部門）</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">大阪大学</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2017</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">松林 哲也</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">日本選挙学会優秀論文賞</div>
+                                        <p class="text-xs text-gray-500 leading-relaxed">投票環境と投票率</p>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">日本選挙学会</td>
+                                </tr>
+                                <tr class="border-b border-gray-50 hover:bg-gray-50 transition duration-200 group">
+                                    <td class="p-4 align-top text-gray-500 text-sm">2015</td>
+                                    <td class="p-4 align-top text-gray-700 font-medium">松林 哲也</td>
+                                    <td class="p-4 align-top">
+                                        <div class="text-navy font-bold text-base md:text-lg mb-1 group-hover:text-blue-700 transition">Political Research Quarterly 優秀査読者</div>
+                                    </td>
+                                    <td class="p-4 align-top text-gray-500 text-sm">Political Research Quarterly</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="no-results" class="hidden py-20 text-center text-gray-400">
+                        該当する実績は見つかりませんでした
+                    </div>
+                    
+                    <!-- ページネーション用コントロール -->
+                    <div id="pagination-controls" class="flex justify-center mt-8 gap-2"></div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-8 text-center">
+                    <a href="index.html" class="text-navy font-bold hover:underline text-sm inline-flex items-center">
+                        ホームに戻る
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- フッター (全ページ共通) -->
+    <footer class="bg-slate-900 text-white pt-16 pb-10">
+        <div class="container mx-auto px-4 text-center md:text-left">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12 border-b border-slate-800 pb-12">
+                <div>
+                    <h5 class="text-lg font-bold mb-6 italic tracking-widest">CEPO Contact</h5>
+                    <p class="text-xs md:text-sm opacity-60 leading-loose mb-6">
+                        政策エビデンス推進研究センター<br>
+                        大阪大学大学院国際公共政策研究科 (OSIPP)<br>
+                        〒560-0043 大阪府豊中市待兼山町1-31<br>
+                        Email: 602sec@osipp.osaka-u.ac.jp<br>
+                        Tel: Tel : 06-6850-6111（代表）
+                    </p>
+                    <ul class="text-xs md:text-sm space-y-3">
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/about-osipp/where-we-are/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPPへのアクセス</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/about-osipp/job-openings/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">求人情報</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/osipp-news-and-upcoming-events/osipp-club-page/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPP Clubメールマガジン</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/osipp-links/global-community-office/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPP Global Community Office</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">Related Links</h5>
+                    <ul class="text-xs md:text-sm space-y-3 opacity-60">
+                        <li><a href="https://www.osaka-u.ac.jp/ja" target="_blank" class="hover:text-blue-400 transition">大阪大学 Website</a></li>
+                        <li><a href="https://www.library.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">大阪大学附属図書館</a></li>
+                        <li><a href="https://www.econ.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">経済学研究科・経済学部</a></li>
+                        <li><a href="https://www.law.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">大阪大学法学系ポータルサイト</a></li>
+                        <li><a href="https://www.iser.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">社会経済研究所</a></li>
+                        <li><a href="https://gsss-osaka.net/" target="_blank" class="hover:text-blue-400 transition">大阪大学社会科学系連携ポータル</a></li>
+                        <li><a href="https://ciee.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">Center for International Education and Exchange</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">Centers & Programs</h5>
+                    <ul class="text-xs md:text-sm space-y-3 opacity-60">
+                        <li><a href="#" class="hover:text-blue-400 transition">EBPM研究センター</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/iaforresearchcentre/" target="_blank" class="hover:text-blue-400 transition">大阪大学大学院国際公共政策研究科IAFOR研究センター</a></li>
+                        <li><a href="https://www.cbi.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">The Cross-Boundary Innovation (CBI) Program</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/leader/" target="_blank" class="hover:text-blue-400 transition">グローバルリーダーシップ・プログラム（ＧＬＰ）</a></li>
+                        <li><a href="https://www.osaka-u.ac.jp/ja/education/fukusenkou/gm_programs" target="_blank" class="hover:text-blue-400 transition">大学院副専攻プログラム・大学院等高度副プログラム</a></li>
+                        <li><a href="https://esg-irec.jp/" target="_blank" class="hover:text-blue-400 transition">ESGインテグレーション研究教育センター（ESG-IREC）</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/curriculum/double-degree-programs/" target="_blank" class="hover:text-blue-400 transition">ダブルディグリー・プログラム</a></li>
+                    </ul>
+                </div>
+               <div>
+                    <h5 class="text-lg font-bold mb-6">OSIPP公式SNS</h5>
+                    <div class="flex flex-wrap gap-4 justify-start">
+                        <a href="https://www.facebook.com/osipp.nl/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-600 transition" aria-label="Facebook">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/osaka_u_osipp/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-600 transition" aria-label="Instagram">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://x.com/OSIPP_Osaka_U" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gray-600 transition" aria-label="X">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCAY0Gd786_CILQqGwRF1tRQ" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition" aria-label="YouTube">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122-2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                    <div class="mt-6 flex justify-center md:justify-start">
+                        <a href="#" class="block hover:opacity-80 transition bg-white p-1 rounded border border-gray-200">
+                            <img src="スクリーンショット 2026-03-21 102643.png" alt="OSIPP News blog" class="w-[200px] h-auto rounded">
+                        </a>
+                    </div>
+                    <h5 class="text-lg font-bold mt-8 mb-6">The University of Osaka</h5>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="https://www.facebook.com/TheUniversityofOsaka/" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-600 transition" aria-label="Facebook">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/uosaka_1931/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-600 transition" aria-label="Instagram">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://x.com/UOsaka_ja" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gray-600 transition" aria-label="X">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/user/osakaunivofficial" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition" aria-label="YouTube">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122-2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center opacity-30 text-[10px] tracking-widest uppercase">
+                &copy; 2024 CENTER FOR EVIDENCE-BASED POLICY (CEPO), OSIPP.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript：UI制御ロジック -->
+    <script>
+        // ハンバーガーメニュー制御
+        const menuBtn = document.getElementById('menu-btn');
+        const mainMenu = document.getElementById('main-menu');
+        const b1 = document.getElementById('bar1');
+        const b2 = document.getElementById('bar2');
+        const b3 = document.getElementById('bar3');
+
+        function updateMenuBars(isActive) {
+            if (isActive) {
+                b1.style.transform = 'translateY(8px) rotate(45deg)';
+                b2.style.opacity = '0';
+                b3.style.transform = 'translateY(-8px) rotate(-45deg)';
+            } else {
+                b1.style.transform = 'none';
+                b2.style.opacity = '1';
+                b3.style.transform = 'none';
+            }
+        }
+
+        menuBtn.addEventListener('click', () => {
+            const isActive = mainMenu.classList.toggle('active');
+            updateMenuBars(isActive);
+        });
+
+        // 検索とページネーションの統合制御
+        const rowsPerPage = 10;
+        let currentPage = 1;
+        let totalPages = 1;
+        let allRows = [];
+        let filteredRows = [];
+
+        function initTableControls() {
+            const tbody = document.getElementById('award-tbody');
+            if (!tbody) return;
+            
+            allRows = Array.from(tbody.querySelectorAll('tr'));
+            filteredRows = [...allRows];
+            
+            const searchInput = document.getElementById('award-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+            }
+
+            updateTableDisplay();
+        }
+
+        function handleSearch(e) {
+            const term = e.target.value.toLowerCase().trim();
+            
+            filteredRows = allRows.filter(row => {
+                return row.textContent.toLowerCase().includes(term);
+            });
+            
+            currentPage = 1;
+            updateTableDisplay();
+        }
+
+        function updateTableDisplay() {
+            totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+            
+            allRows.forEach(row => row.style.display = 'none');
+            
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            
+            filteredRows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    row.style.display = '';
+                }
+            });
+
+            const noResults = document.getElementById('no-results');
+            noResults.classList.toggle('hidden', filteredRows.length > 0);
+
+            renderPaginationControls();
+        }
+
+        function renderPaginationControls() {
+            const container = document.getElementById('pagination-controls');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (totalPages <= 1) return;
+
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = '前へ';
+            prevBtn.className = `px-3 md:px-4 py-1 md:py-2 border rounded text-sm transition ${currentPage === 1 ? 'text-gray-400 bg-gray-50 cursor-not-allowed' : 'text-navy hover:bg-gray-100'}`;
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateTableDisplay();
+                    window.scrollTo({ top: 300, behavior: 'smooth' });
+                }
+            };
+            container.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = `px-3 md:px-4 py-1 md:py-2 border rounded text-sm transition ${i === currentPage ? 'bg-blue-600 text-white font-bold border-blue-600' : 'text-navy hover:bg-gray-100'}`;
+                btn.onclick = () => {
+                    currentPage = i;
+                    updateTableDisplay();
+                    window.scrollTo({ top: 300, behavior: 'smooth' });
+                };
+                container.appendChild(btn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = '次へ';
+            nextBtn.className = `px-3 md:px-4 py-1 md:py-2 border rounded text-sm transition ${currentPage === totalPages ? 'text-gray-400 bg-gray-50 cursor-not-allowed' : 'text-navy hover:bg-gray-100'}`;
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateTableDisplay();
+                    window.scrollTo({ top: 300, behavior: 'smooth' });
+                }
+            };
+            container.appendChild(nextBtn);
+        }
+
+        document.addEventListener('DOMContentLoaded', initTableControls);
+
+        document.addEventListener('click', (e) => {
+            if (mainMenu.classList.contains('active') && !menuBtn.contains(e.target) && !mainMenu.contains(e.target)) {
+                mainMenu.classList.remove('active');
+                updateMenuBars(false);
+            }
+        });
+    </script>
+</body>
+</html>

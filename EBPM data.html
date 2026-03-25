@@ -1,1 +1,686 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEPO | 政策エビデンス推進研究センター | 大阪大学大学院国際公共政策研究科</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #333;
+            line-height: 1.8;
+        }
+        .header-navy {
+            background-color: #003366; 
+        }
+        .text-navy {
+            color: #003366;
+        }
+        .bg-navy-light {
+            background-color: #f0f4f8;
+        }
+        .border-navy {
+            border-color: #003366;
+        }
+        /* メニューアニメーション */
+        #main-menu {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #main-menu.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .hero-overlay {
+            background: linear-gradient(rgba(0,51,102,0.7), rgba(0,51,102,0.4));
+        }
 
+        /* スポイラー（アコーディオン）スタイル */
+        .spoiler-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .spoiler-item.active .spoiler-content {
+            max-height: 3000px;
+            padding-bottom: 1.5rem;
+        }
+        .spoiler-item.active .spoiler-icon {
+            transform: rotate(180deg);
+        }
+
+        /* 画像付きバナーボックスのスタイル */
+        .banner-box {
+            position: relative;
+            height: 240px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        @media (min-width: 1024px) {
+            .banner-box {
+                height: 300px;
+            }
+        }
+        .banner-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .banner-box img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 15px;
+        }
+        .cepo-logo-circle {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 31, 63, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .cepo-logo-circle {
+                width: 90px;
+                height: 90px;
+            }
+        }
+        .banner-text-bottom {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            font-size: 0.75rem;
+            padding: 0 12px;
+            line-height: 1.5;
+        }
+        @media (min-width: 768px) {
+            .banner-text-bottom {
+                bottom: 25px;
+                font-size: 1rem;
+            }
+        }
+
+        /* ページ切り替えの表示制御 */
+        .page-view {
+            display: none;
+        }
+        .page-view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- ナビゲーションバー -->
+    <header class="header-navy text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                <div class="border-l-2 border-white/40 pl-3">
+                    <p class="text-[10px] md:text-xs tracking-widest opacity-80 leading-none mb-1 uppercase">Osaka University / OSIPP</p>
+                    <h1 class="text-lg md:text-xl font-bold tracking-tight leading-none">
+                        CEPO <span class="font-normal text-xs md:text-base ml-1 md:ml-2">政策エビデンス推進研究センター</span>
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- 三本線メニューボタン -->
+            <button id="menu-btn" class="p-2 focus:outline-none flex items-center space-x-3 group">
+                <span class="text-xs font-bold tracking-widest hidden sm:inline">MENU</span>
+                <div class="relative w-6 h-5">
+                    <span id="bar1" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-0"></span>
+                    <span id="bar2" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-2"></span>
+                    <span id="bar3" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-4"></span>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- 展開メニュー（8項目） -->
+    <div id="main-menu" class="fixed inset-x-0 bg-slate-900 text-white z-40 border-t border-slate-700 shadow-2xl overflow-y-auto max-h-[85vh]">
+        <div class="container mx-auto px-6 py-12">
+            <nav class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-4">
+                <div class="flex flex-col">
+                    <a href="index.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">01</span> CepoHome
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">02</span> 活動内容
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="publications.html" class="text-sm text-gray-400 hover:text-white transition">Publications</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">ランチセミナーのお知らせ</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">過去のランチセミナー</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">Discussion Papers</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">研究協力プロジェクト</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">受賞</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">CEPOイベント</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">03</span> メンバー
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">04</span> 入学を希望される方へ
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">OSIPPの教育</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">応募について</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">CEPOサポートサービス</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white transition">理工系の方へ</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">05</span> EBPMのデータ
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">06</span> リンク集
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+<!-- Main Content Area -->
+  <main>
+        <section class="relative h-[250px] md:h-[300px] flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1551288049-bbbda5366fd9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 hero-overlay"></div>
+            </div>
+            <div class="container mx-auto px-4 relative z-10 text-center text-white">
+                <p class="text-xs md:text-sm font-bold tracking-[0.4em] mb-4 uppercase opacity-80">Center for Evidence-based Policy</p>
+                <h2 class="text-2xl md:text-5xl font-bold mb-0 leading-tight">EBPMのデータ</h2>
+            </div>
+        </section>
+
+        <section class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 max-w-5xl text-center">
+                <h3 class="text-xl md:text-2xl font-bold text-navy mb-8">社会科学のデータ</h3>
+                <p class="text-gray-600 text-sm md:text-base leading-loose mb-12 max-w-3xl mx-auto">
+                    このページでは、社会科学の研究を行うための様々なデータソースへのリンクを掲載しています。このページは、OSIPPのCEPOが管理し、寄稿者の方々の多大なご支援により作成されました。
+                </p>
+
+                <div class="mt-12 pt-12 border-t border-gray-100 text-left">
+                    <h4 class="text-lg md:text-xl font-bold text-navy mb-6 text-center">寄稿者一覧</h4>
+                    <p class="text-gray-600 text-xs md:text-sm leading-loose max-w-3xl mx-auto text-justify">
+                        高橋秀典（大阪大学）、M. Abe（大阪大学）、K. Horigome（京都大学）、石瀬寛和（大阪大学）、鎌田拓馬（大阪大学）、菊池信之介（MIT）、菊田恭輔（大阪大学）、北村周平（大阪大学）、E. Kugaevskaia（大阪大学）、松林哲也（大阪大学）、松浦隆之介（ノースウェスタン大学）、重岡仁（サイモンフレーザー大学）、M. Shimogawa（大阪大学）、杉田洋一（一橋大学）、瀧井克也（大阪大学）、S. Tanaka（タフツ大学）、遠山祐太（早稲田大学）、鶴岡昌徳（横浜国立大学）、K. Yamada（京都大学）、山崎潤一（神戸大学）
+                    </p>
+                </div>
+
+                <div class="mt-16 pt-12 border-t border-gray-100">
+                    <h4 id="data-sources" class="text-lg md:text-xl font-bold text-navy mb-6 text-center scroll-mt-24">データソースの検索</h4>
+                    <div class="search-container">
+                        <input type="text" id="genre-search" class="search-input" placeholder="カテゴリー名やキーワード（例: #income, #Metadata）を入力">
+                    </div>
+
+                    <div id="genre-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-w-5xl mx-auto">
+                        <div class="genre-card" data-category="Agriculture"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="genre-name">Agriculture</span></div>
+                        <div class="genre-card" data-category="Crime"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="genre-name">Crime</span></div>
+                        <div class="genre-card" data-category="Conflict"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="genre-name">Conflict</span></div>
+                        <div class="genre-card" data-category="Environment"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 20a2 2 0 1 0 4 0 2 2 0 1 0-4 0z"/><path d="M12 18V2"/><path d="M5 12l7 7 7-7"/></svg><span class="genre-name">Environment</span></div>
+                        <div class="genre-card" data-category="Geography"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg><span class="genre-name">Geography</span></div>
+                        <div class="genre-card" data-category="International Relations"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="genre-name">International Relations</span></div>
+                        <div class="genre-card" data-category="Law"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 7v10M9 7v10M15 7v10M4 7h16M4 17h16"/></svg><span class="genre-name">Law</span></div>
+                        <div class="genre-card" data-category="Macro"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg><span class="genre-name">Macro</span></div>
+                        <div class="genre-card" data-category="Marketing"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg><span class="genre-name">Marketing</span></div>
+                        <div class="genre-card" data-category="Media"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 11h16M4 15h16M4 19h16M4 7h16"/></svg><span class="genre-name">Media</span></div>
+                        <div class="genre-card" data-category="Micro"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><path d="M17.3 6.7l-2.6 2.6M6.7 17.3l2.6-2.6"/></svg><span class="genre-name">Micro</span></div>
+                        <div class="genre-card" data-category="Politics"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M3 7l9-5 9 5v14H3V7z"/><path d="M9 21v-5a3 3 0 0 1 6 0v5"/></svg><span class="genre-name">Politics</span></div>
+                        <div class="genre-card" data-category="Social Survey"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg><span class="genre-name">Social Survey</span></div>
+                        <div class="genre-card" data-category="Education"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span class="genre-name">Education</span></div>
+                        <div class="genre-card" data-category="Health and Wellbeing"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg><span class="genre-name">Health and Wellbeing</span></div>
+                        <div class="genre-card" data-category="Income and Expenditure"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="genre-name">Income and Expenditure</span></div>
+                        <div class="genre-card" data-category="Labor"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/></svg><span class="genre-name">Labor</span></div>
+                        <div class="genre-card" data-category="Mobility and Migration"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span class="genre-name">Mobility and Migration</span></div>
+                        <div class="genre-card" data-category="Technology Adoption"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h.01"/><path d="M15 9h.01"/><path d="M9 15h.01"/><path d="M15 15h.01"/></svg><span class="genre-name">Technology Adoption</span></div>
+                        <div class="genre-card" data-category="Industry-Specific"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18"/><path d="M3 7v14"/><path d="M13 21V3l4 2v16"/><path d="M21 21V9l-4-2"/><path d="M9 21V11l4-2"/></svg><span class="genre-name">Industry-Specific</span></div>
+                        <div class="genre-card" data-category="Region-Specific"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2"/><path d="M12 2v10"/><path d="m8 8 4 4 4-4"/></svg><span class="genre-name">Region-Specific</span></div>
+                        <div class="genre-card" data-category="Metadata"><svg class="genre-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg><span class="genre-name">Metadata</span></div>
+                    </div>
+
+                    <div id="details-area">
+                        <h5 id="details-title" class="text-xl font-bold text-navy mb-4">カテゴリー名</h5>
+                        <div id="details-content" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <div class="mt-20 pt-16 border-t border-gray-100">
+                    <a href="#data-sources" class="large-resource-banner group shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Social Science Research">
+                        <div class="banner-text-overlay"><h4 class="banner-title">Social Science Data Sources</h4></div>
+                    </a>
+                </div>
+
+                <div class="rounded-2xl overflow-hidden shadow-xl w-full max-w-2xl mx-auto mt-24">
+                    <img src="https://images.unsplash.com/photo-1521791136366-398537539de8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="" class="w-full">
+                </div>
+            </div>
+        </section>
+        
+        <section class="pb-16 bg-white">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div class="border-t border-gray-100 pt-8 text-center">
+                    <a href="index.html" class="text-navy font-bold hover:underline text-sm">ホームに戻る</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- フッター (全ページ共通) -->
+    <footer class="bg-slate-900 text-white pt-16 pb-10">
+        <div class="container mx-auto px-4 text-center md:text-left">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12 border-b border-slate-800 pb-12">
+                <div>
+                    <h5 class="text-lg font-bold mb-6 italic tracking-widest">CEPO Contact</h5>
+                    <p class="text-xs md:text-sm opacity-60 leading-loose mb-6">
+                        政策エビデンス推進研究センター<br>
+                        大阪大学大学院国際公共政策研究科 (OSIPP)<br>
+                        〒560-0043 大阪府豊中市待兼山町1-31<br>
+                        Email: 602sec@osipp.osaka-u.ac.jp<br>
+                        Tel: Tel : 06-6850-6111（代表）
+                    </p>
+                    <ul class="text-xs md:text-sm space-y-3">
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/about-osipp/where-we-are/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPPへのアクセス</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/about-osipp/job-openings/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">求人情報</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/osipp-news-and-upcoming-events/osipp-club-page/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPP Clubメールマガジン</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/osipp-links/global-community-office/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPP Global Community Office</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">Related Links</h5>
+                    <ul class="text-xs md:text-sm space-y-3 opacity-60">
+                        <li><a href="https://www.osaka-u.ac.jp/ja" target="_blank" class="hover:text-blue-400 transition">大阪大学 Website</a></li>
+                        <li><a href="https://www.library.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">大阪大学附属図書館</a></li>
+                        <li><a href="https://www.econ.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">経済学研究科・経済学部</a></li>
+                        <li><a href="https://www.law.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">大阪大学法学系ポータルサイト</a></li>
+                        <li><a href="https://www.iser.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">社会経済研究所</a></li>
+                        <li><a href="https://gsss-osaka.net/" target="_blank" class="hover:text-blue-400 transition">大阪大学社会科学系連携ポータル</a></li>
+                        <li><a href="https://ciee.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">Center for International Education and Exchange</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">Centers & Programs</h5>
+                    <ul class="text-xs md:text-sm space-y-3 opacity-60">
+                        <li><a href="#" class="hover:text-blue-400 transition">EBPM研究センター</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/iaforresearchcentre/" target="_blank" class="hover:text-blue-400 transition">大阪大学大学院国際公共政策研究科IAFOR研究センター</a></li>
+                        <li><a href="https://www.cbi.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">The Cross-Boundary Innovation (CBI) Program</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/leader/" target="_blank" class="hover:text-blue-400 transition">グローバルリーダーシップ・プログラム（ＧＬＰ）</a></li>
+                        <li><a href="https://www.osaka-u.ac.jp/ja/education/fukusenkou/gm_programs" target="_blank" class="hover:text-blue-400 transition">大学院副専攻プログラム・大学院等高度副プログラム</a></li>
+                        <li><a href="https://esg-irec.jp/" target="_blank" class="hover:text-blue-400 transition">ESGインテグレーション研究教育センター（ESG-IREC）</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/curriculum/double-degree-programs/" target="_blank" class="hover:text-blue-400 transition">ダブルディグリー・プログラム</a></li>
+                    </ul>
+                </div>
+               <div>
+                    <h5 class="text-lg font-bold mb-6">OSIPP公式SNS</h5>
+                    <div class="flex flex-wrap gap-4 justify-start">
+                        <a href="https://www.facebook.com/osipp.nl/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-600 transition" aria-label="Facebook">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/osaka_u_osipp/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-600 transition" aria-label="Instagram">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://x.com/OSIPP_Osaka_U" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gray-600 transition" aria-label="X">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCAY0Gd786_CILQqGwRF1tRQ" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition" aria-label="YouTube">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122-2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                    <div class="mt-6 flex justify-center md:justify-start">
+                        <a href="#" class="block hover:opacity-80 transition bg-white p-1 rounded border border-gray-200">
+                            <img src="スクリーンショット 2026-03-21 102643.png" alt="OSIPP News blog" class="w-[200px] h-auto rounded">
+                        </a>
+                    </div>
+                    <h5 class="text-lg font-bold mt-8 mb-6">The University of Osaka</h5>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="https://www.facebook.com/TheUniversityofOsaka/" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-600 transition" aria-label="Facebook">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/uosaka_1931/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-600 transition" aria-label="Instagram">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://x.com/UOsaka_ja" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gray-600 transition" aria-label="X">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/user/osakaunivofficial" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition" aria-label="YouTube">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122-2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center opacity-30 text-[10px] tracking-widest uppercase">
+                &copy; 2024 CENTER FOR EVIDENCE-BASED POLICY (CEPO), OSIPP.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript：UI制御ロジック -->
+   <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mainMenu = document.getElementById('main-menu');
+        const b1 = document.getElementById('bar1');
+        const b2 = document.getElementById('bar2');
+        const b3 = document.getElementById('bar3');
+
+        function updateMenuBars(isActive) {
+            if (isActive) {
+                b1.style.transform = 'translateY(8px) rotate(45deg)'; b2.style.opacity = '0'; b3.style.transform = 'translateY(-8px) rotate(-45deg)';
+            } else {
+                b1.style.transform = 'none'; b2.style.opacity = '1'; b3.style.transform = 'none';
+            }
+        }
+
+        menuBtn.addEventListener('click', () => {
+            const isActive = mainMenu.classList.toggle('active');
+            updateMenuBars(isActive);
+        });
+
+        const categoryData = {
+            "Agriculture": [
+                { name: "Agriculture Datasets (University of Wisconsin-Madison)", url: "https://sage.nelson.wisc.edu/", desc: "#land use #land coverage #urban land #soil #irrigation #river discharge #crop calendar #historical croplands #historical data #emissions #air quality #GIS data #multiple datasets" },
+                { name: "Food and Agriculture Datasets (FAO)", url: "https://www.fao.org/faostat/", desc: "#agricultural production & prices #food security #food balances #fertilizer use #investment into agriculture #population #employment in agriculture #emissions #land use #forestry #multiple datasets #country level" },
+                { name: "EarthStat (University of Minnesota and UBC)", url: "http://www.earthstat.org/", desc: "#croplands #crop yield #emissions #water depletion #fertilizer use #crop allocation to food #GIS data #multiple datasets" },
+                { name: "History Database of the Global Environment (PBL)", url: "https://pbl.nl/hyde", desc: "#HYDE #land use #population #historical data #12,000 years" },
+                { name: "Irrigation: MIRCA2000 (Goethe-Universität Frankfurt)", url: "https://www.uni-frankfurt.de/45217774/Data_and_Software", desc: "#MIRCA2000 #water use #irrigated crop areas #rainfed crop areas #GIS data #monthly data #around year 2000" },
+                { name: "Irrigation: Geo-referenced Database on Dams (AQUASTAT, FAO)", url: "https://www.fao.org/aquastat/en/databases/dams", desc: "#water use #irrigation #dam location #dam characteristics #GIS data #multiple countries" },
+                { name: "Agriculture & Development: Agricultural Transition Dataset (Louis Putterman, Brown University)", url: "https://www.brown.edu/Departments/Economics/Faculty/Louis_Putterman/agricultural%20data.htm", desc: "#year of transition from hunting/gathering to agriculture #historical data #cross-section #country level" },
+                { name: "Agriculture & Development: ASTI (IFPRI)", url: "https://www.asti.cgiar.org/data", desc: "#agricultural research spending #number of agricultural researchers #panel #country level" }
+            ],
+            "Conflict": [
+                { isSubheader: true, title: "Conflict" },
+                { name: "Integrated Network for Societal Conflict Research Datasets (Center for Systemic Peace)", url: "http://www.systemicpeace.org/inscrdata.html", desc: "#INSCR #refugees #political violence #terrorist attack #intergovernmental organizations #polity5 #coup d'etat #state fragility #India #crime #multiple datasets #country level" },
+                { name: "Integrated Crisis Early Warning System Dataverse (Harvard University)", url: "https://dataverse.harvard.edu/dataverse/icews", desc: "#ICEWS #event level" },
+                { name: "Global Instances of Coups, 1950-Present (Powell and Thyne, 2011)", url: "https://www.jonathanmpowell.com/coup-detat-dataset.html", desc: "#coup d'etat #country level" },
+                { name: "Global Terrorism Database (START)", url: "https://www.start.umd.edu/gtd/", desc: "#GTD #terrorism #terrorist attack #fatalities #event level #multiple countries #since 1970 #requires registration" },
+                { name: "Ethnic Power Relations 3.0 (Wimmer, Cederman and Min, 2009)", url: "https://icr.ethz.ch/data/epr/", desc: "#ethnicity #political power #country level #1946-2010" },
+                { isSubheader: true, title: "Armed Conflict" },
+                { name: "UCDP Dataset Download Center (Uppsala Conflict Data Program)", url: "https://ucdp.uu.se/downloads/", desc: "#UCDP #violence #intervention #fatalities #electoral violence #ethnic violence #non-state actors #external support #dyadic relationship #conflict termination #event level #multiple countries #multiple datasets #since 1945" },
+                { name: "The Armed Conflict Location & Event Data Project", url: "https://acleddata.com/", desc: "#ACLED #political violence #religious violence #protest #fatalities #dyadic relationship #event level #multiple countries #since 1997 #requires registration" },
+                { isSubheader: true, title: "Social Conflict" },
+                { name: "Social Conflict Analysis Database (Robert Strauss Center)", url: "https://www.strausscenter.org/scad.html", desc: "#SCAD #violence #protest #inter-communal conflict #government violence against civilians #Africa #Latin America #event level #1990-2017" },
+                { name: "Dynamics of Collective Action", url: "https://web.stanford.edu/group/collectiveaction/cgi-bin/wiki/index.php/Main_Page", desc: "#social movement #protest #USA #event level #1955-1995 #requires registration" },
+                { name: "Historical Social Conflict Database", url: "https://www.hiscondata.org/", desc: "#HiSCoD #historical data #France #event level #late Middle Ages - 19th century" }
+            ],
+            "Crime": [
+                { name: "Crime-related Data (Jakob Kaplan)", url: "https://jacobkaplan.com/", desc: "#employment #government finance #alcohol consumption #jail standards #arrest #arson #human trafficking #property crime #homicide #police #USA #multiple datasets" },
+                { name: "National Neighborhood Data Archive", url: "https://www.openicpsr.org/openicpsr/nanda", desc: "#NaNDA #murder #rape #assault #robbery #theft #arson #USA #2002-2014 #county level" },
+                { name: "Pathway to Desistance", url: "https://www.pathwaysstudy.pitt.edu/", desc: "#juvenile crime #serious adolescent offenders #USA #panel #individual level #requires registration" },
+                { name: "警視庁の統計 (Crime Statistics for Tokyo Metropolis)", url: "https://www.keishicho.metro.tokyo.lg.jp/about_mpd/jokyo_tokei/index.html", desc: "#murder #rape #assault #robbery #theft #arson #fraud #organized crime #juvenile crime #traffic accidents #Japan #Tokyo #source in Japanese #since 2011 #police station level #multiple datasets" }
+            ],
+            "Environment": [
+                { isSubheader: true, title: "Climate & Weather" },
+                { name: "National Centers for Environmental Information (NOAA)", url: "https://www.ncei.noaa.gov/", desc: "#air quality #atmospheric pressure #temperature #wind #clouds #precipitation #ocean waves #tides #multiple datasets #daily data #hourly data #since 20th century" },
+                { name: "Climate Data Guide (NCAR)", url: "https://climatedataguide.ucar.edu/", desc: "#atmosphere #temperature #precipitation #clouds #ice #carbon dioxide #multiple datasets" },
+                { name: "Data Basin (Conservation Biology Institute)", url: "https://databasin.org/", desc: "#biogeography #physical geography #socio-economic geography #GIS data #multiple datasets #requires registration" },
+                { name: "EPA EnviroAtlas", url: "https://www.epa.gov/enviroatlas", desc: "#interactive map #biodiversity #land cover #weather #infrastructure #pollution #demographics #historical climate data #USA" },
+                { name: "メッシュ農業気象データシステム (NARO)", url: "https://amu.naro.go.jp/", desc: "#weather #GIS data #mesh data #daily data #Japan #source in Japanese #since 1980 #requires registration" },
+                { isSubheader: true, title: "Disaster" },
+                { name: "International Disaster Database (CRED)", url: "https://www.emdat.be/", desc: "#natural disaster #technological disaster #disaster impact #since 1900 #requires registration" },
+                { name: "Satellite Analysis and Applied Research (UNITAR)", url: "https://unitar.org/maps", desc: "#disaster affected areas #GIS data #multiple datasets" },
+                { isSubheader: true, title: "Natural Resources" },
+                { name: "Global Forest Watch (WRI)", url: "https://www.globalforestwatch.org/", desc: "#forest change #land use #nature conservation #tree cover #GIS data #multiple datasets" },
+                { name: "Global Lakes and Wetlands Database (WWF)", url: "https://www.worldwildlife.org/publications/global-lakes-and-wetlands-database-lakes-reservoirs-and-wetlands-grid-level-3", desc: "#GLWD #lakes #water bodies #wetlands #GIS data" },
+                { isSubheader: true, title: "Pollution" },
+                { name: "Clean Air Markets (EPA)", url: "https://www.epa.gov/airmarkets", desc: "#power plant emissions #emission allowance #USA #multiple datasets" },
+                { name: "Outdoor Air Quality Data (EPA)", url: "https://www.epa.gov/outdoor-air-quality-data", desc: "#air quality #USA #multiple datasets #daily data #annual data #county level #since 1980" },
+                { name: "Toxics Release Inventory Program (EPA)", url: "https://www.epa.gov/tosca-inventory", desc: "#industrial pollution #toxics release #toxic waste disposal #USA #multiple datasets #facility level #since 1987" }
+            ],
+            "Geography": [
+                { isSubheader: true, title: "Geography" },
+                { name: "Free GIS Data (Robin Wilson)", url: "http://freegisdata.rtwilson.com/", desc: "#metadata #GIS data #physical geography #human geography #multiple countries #multiple datasets" },
+                { name: "GeoNetwork (FAO)", url: "http://www.fao.org/geonetwork/srv/en/main.home", desc: "#climate #physical geography #human geography #agriculture #transportation #GIS data #multiple datasets" },
+                { name: "Earthdata (NASA)", url: "https://earthdata.nasa.gov/", desc: "#atmosphere #climate #solar radiance #land #ocean #ice #ecosystems #human geography #agriculture #GIS data #multiple datasets" },
+                { isSubheader: true, title: "Administrative Division and Names" },
+                { name: "Natural Earth (NACIS)", url: "https://www.naturalearthdata.com/", desc: "#administrative division #infrastructure #timezones #physical geography #GIS data #raster data #multiple datasets" },
+                { name: "Database of Global Administrative Areas", url: "https://gadm.org/", desc: "#GADM #administrative division #GIS data #multiple countries" },
+                { name: "GeoNames Search (NGA)", url: "https://geonames.nga.mil/namesgaz/", desc: "#geographic name variants #multiple countries" },
+                { isSubheader: true, title: "Nightlight" },
+                { name: "Earth Observation Group", url: "https://eogdata.mines.edu/products/vnl/", desc: "#nighttime lights #since 1992 #nightfire #gas flaring #boat detection #satellite data #GIS data #monthly data #annual data" },
+                { isSubheader: true, title: "Population Distribution" },
+                { name: "LandScan (Oak Ridge National Laboratory)", url: "https://landscan.ornl.gov/", desc: "#population count per 1x1km cell #GIS data #mesh data #2000-2019 #requires registration" },
+                { name: "World Database of Large Urban areas (Nordpil)", url: "https://nordpil.com/resources/world-database-of-large-urban-areas/", desc: "#urban population #GIS data #since 1950" }
+            ],
+            "International Relations": [
+                { name: "International Relations Data Site (University of North Texas)", url: "https://www.paulhensel.org/data.html", desc: "#metadata #conflict #economics #environment #politics #society #culture #multiple datasets" },
+                { name: "The Correlates of War Project", url: "https://correlatesofwar.org/data-sets/", desc: "#COW #material capability #war #militarized interstate dispute #alliances #religion #contiguity #territorial change #colonies #defense #diplomatic exchange #intergovernmental organization #trade #multiple datasets #country level" }
+            ],
+            "Law": [
+                { name: "Comparative Constitutions Project", url: "https://comparativeconstitutionsproject.org/", desc: "#constitution text #constitution characteristics #chronology #country level #multiple datasets #requires registration" },
+                { name: "Labor Market Regulation (Botero et al. 2004)", url: "https://scholar.harvard.edu/shleifer/publications/regulation-labor", desc: "#labor market #employment law #collective relations law #social security law #cross-section #country level" }
+            ],
+            "Macro": [
+                { isSubheader: true, title: "Macro" },
+                { name: "International Monetary Fund Data", url: "https://www.imf.org/en/Data", desc: "#IMF #GDP #inflation #balance of payments #investment #capital flow #debt #imports #exports #government finance #currency composition #financial soundness #commodity prices #time series data #multiple datasets" },
+                { name: "UNCTADstat (UNCTAD)", url: "https://unctadstat.unctad.org/", desc: "#international trade #balance of payments #inflation #exchange rate #commodity prices #GDP #productive capacities #time series data #multiple datasets" },
+                { name: "Economic Transformation Database", url: "https://www.ggdc.net/databases/etd.html", desc: "#labor input #value added #sector level #multiple countries #1990-2018" },
+                { isSubheader: true, title: "GDP" },
+                { name: "Penn World Table (GGDC)", url: "https://www.ggdc.net/pwt", desc: "#PPP-adjusted GDP #1950-2019" },
+                { name: "Historical National Accounts", url: "https://www.ggdc.net/databases/hna.html", desc: "#GDP #industry level #historical data #multiple countries #19th century - 20th century" },
+                { name: "Maddison Project Database 2020", url: "https://www.ggdc.net/maddison", desc: "#GDP #historical data #1-2018" },
+                { isSubheader: true, title: "Region-Specific" },
+                { name: "FRED Economic Data (Federal Reserve Bank of St. Louis)", url: "https://fred.stlouisfed.org/", desc: "#finance #national accounts #production #prices #population #historical data #latest data #time series data #USA #state level #international data #country level #multiple datasets" },
+                { name: "OECD.Stat", url: "https://stats.oecd.org/", desc: "#finance #national accounts #industries #prices #aid #public sector #socio-demographics #environment #science #OECD countries #time series data #multiple datasets" },
+                { name: "EU KLEMS (WIIW)", url: "https://euklems.eu/", desc: "#growth accounts #national accounts #labor #capital #EU #industry level #1995-2017" },
+                { name: "Eurostat", url: "https://ec.europa.eu/eurostat/data/database", desc: "#finance #trade #population #industries #environment #EU #time series data #multiple datasets" },
+                { name: "Long-Term Economic Statistics Database (Hitotsubashi University)", url: "https://www.ier.hit-u.ac.jp/Japanese/databases/ltes/", desc: "#LTES #Japan #GDP #trade #balance of payments #population #prices #expenditures #industries #historical data #time series data #late 19th century - mid 20th century" },
+                { isSubheader: true, title: "International Trade" },
+                { name: "UN Comtrade Database", url: "https://comtrade.un.org/", desc: "#trade flows #exporter-importer-industry level #annual data #monthly data" },
+                { name: "Gravity Cookbook Website", url: "http://www.cepii.fr/CEPII/en/bdd_modele/presentation.asp?id=8", desc: "#gravity #bilateral trade #trade costs #multiple datasets" },
+                { name: "Commodity Flow Survey (BTS)", url: "https://www.bts.gov/cfs", desc: "#national freight flows #USA #1993-2017 (every 5 years)" },
+                { name: "World Input-Output Database", url: "http://www.wiod.org/", desc: "#WIOD #input-output #multiple datasets" },
+                { name: "Global Bilateral Migration (The World Bank)", url: "https://data.worldbank.org/data-catalog/global-bilateral-migration-database", desc: "#bilateral migration stock #1970-2000 (every 10 years)" }
+            ],
+            "Marketing": [
+                { name: "Kilts Center for Marketing (University of Chicago Booth)", url: "https://www.chicagobooth.edu/research/kilts/datasets", desc: "#sales #store level #household spending #household level #USA #multiple datasets" }
+            ],
+            "Media": [
+                { name: "The Cable TV News Dataset (Stanford)", url: "https://tvnews.stanford.edu/", desc: "#TV news #TV shows #CNN #Fox News #MSNBC #cable TV #video data #transcript data #TV program length #people on TV #USA #since 2010 #not available for direct download" }
+            ],
+            "Micro": [
+                { isSubheader: true, title: "Auction" },
+                { name: "Infrastructure Procurement Auction Data (Florida DOT)", url: "https://www.fdot.gov/contracts", desc: "#transportation #construction #geospatial data #auction #bid #contract #county #USA" },
+                { name: "Public Procurement Auctions in Japan (MLIT)", url: "https://www.mlit.go.jp/chotatsu/shikaku/index.html", desc: "#infrastructure #construction #auction #bid #contract #regional development bureau #source in Japanese" },
+                { name: "Historical Data of Auction Results (Ministry of Finance)", url: "https://www.mof.go.jp/english/jgbs/publication/results/index.html", desc: "#Japanese government bonds #T-Bills #liquidity enhancement auctions #auction #bid #contract" },
+                { isSubheader: true, title: "Preferences" },
+                { name: "Global Preferences Survey (briq)", url: "https://www.briq-institute.org/global-preferences/home", desc: "#GPS #preferences #reciprocity #altruism #trust" },
+                { name: "Japan Household Panel Survey on Consumer Preferences and Satisfaction (ISER)", url: "https://www.iser.osaka-u.ac.jp/survey-data/jhps-cps.html", desc: "#JHPS-CPS #risk aversion #time preference #habit formation #externality #consumption #income #individual #panel #Japan #USA #China #India #since 2003" }
+            ],
+            "Politics": [
+                { isSubheader: true, title: "Elections" },
+                { name: "Constituency-Level Elections Archive (University of Michigan)", url: "https://electiondataarchive.org/", desc: "#CLEA #election #vote #turnout #quota #party #multiple countries #multiple datasets" },
+                { name: "Manifesto Project (WZB)", url: "https://manifesto-project.wzb.eu/", desc: "#MARPOR #party #election manifestos #manifesto texts #policy preferences #multiple countries #since 1945" },
+                { isSubheader: true, title: "Institutions" },
+                { name: "Variety of Democracy (University of Gothenburg)", url: "https://www.v-dem.net/", desc: "#V-Dem #measure democracy #democracy indices #multiple countries #multiple datasets #since 1789" },
+                { name: "Database of Political Institutions (World Bank)", url: "https://www.worldbank.org/en/research/brief/political-institutions", desc: "#electoral results #checks & balances #stability #party #fragmentation #multiple countries #since 1975" },
+                { isSubheader: true, title: "Political Leadership" },
+                { name: "Archigos: Data Base on Leaders", url: "http://www.ksgleditsch.com/archigos.html", desc: "#political leaders #date #entry #exit #gender #previous times in office #post-exit fate #multiple countries #since 1875" }
+            ],
+            "Social Survey": [
+                { name: "World Values Survey", url: "https://www.worldvaluessurvey.org/", desc: "#WVS #beliefs #values #economic development #democracy #religion #gender #social capital #well-being #multiple countries #time series #every 5 years #since 1981" },
+                { name: "General Social Survey", url: "https://gss.norc.org/", desc: "#GSS #opinion #attitude #civil liberties #crime #tolerance #morality #well-being #social mobility #stress #USA #interview #individual #since 1972" },
+                { name: "Japanese General Social Survey", url: "https://jgss.dais.is.titech.ac.jp/", desc: "#JGSS #occupation #daily activities #values #behavior #political attitudes #Japan #interview #survey #requires application #since 2000" },
+                { name: "Social Science Japan Data Archive (University of Tokyo)", url: "https://csrda.iss.u-tokyo.ac.jp/ssjda/", desc: "#SSJDA #living #education #labor #health #source in Japanese #multiple datasets #Japan #survey #requires registration" },
+                { name: "Panel Data Research Center (Keio University)", url: "https://www.pdrc.keio.ac.jp/", desc: "#JHPS #KHPS #JCPS #GEES #JPSC #JHPS-CNEF #employment #income #health #education #consumption #panel #multiple datasets #Japan #survey #requires registration" },
+                { name: "Rikkyo University Data Archive", url: "https://spirit.rikkyo.ac.jp/ruda/", desc: "#RUDA #sociology #living #opinion #multiple datasets #source in Japanese #Japan #survey #requires registration" }
+            ],
+            "Education": [
+                { name: "TIMSS & PIRLS' Educational Dataset (Boston College)", url: "https://timssandpirls.bc.edu/", desc: "#TIMSS #PIRLS #repeated cross-section #country level #math #science #reading #4th grade #8th grade" },
+                { name: "Program for International Student Assessment (OECD)", url: "https://www.oecd.org/pisa/", desc: "#PISA #OECD #repeated cross-section #country level #math #science #reading #15-year-old" },
+                { name: "The Civil Rights Project (UCLA)", url: "https://www.civilrightsproject.ucla.edu/", desc: "#school discipline #school suspension #school expulsion #secondary school #elementary school #USA #school district level #state level" }
+            ],
+            "Health and Wellbeing": [
+                { isSubheader: true, title: "Health" },
+                { name: "Health Data (CDC)", url: "https://data.cdc.gov/", desc: "#alcohol #diseases #USA #multiple datasets" },
+                { name: "National Health Interview Survey (NCHS)", url: "https://www.cdc.gov/nchs/nhis/index.htm", desc: "#NHIS #illness #disability #health service #interview #repeated cross-section #household #USA #since 1957" },
+                { name: "Health and Retirement Study (University of Michigan)", url: "https://hrs.isr.umich.edu/", desc: "#HRS #survey #panel #over-50-year-old #elderly #retirement #USA" },
+                { name: "Demographic and Health Surveys (USAID)", url: "https://dhsprogram.com/", desc: "#DHS Program #population #HIV #nutrition #survey #USA #multiple countries #requires registration" },
+                { name: "World Fertility Survey (DHS)", url: "https://dhsprogram.com/topics/fertility/", desc: "#WFS #fertility #women #household #development economics #survey #multiple countries" },
+                { name: "Survey of Epidemiology and End Results (NBER)", url: "https://seer.cancer.gov/", desc: "#SEER #population #age #race #USA #state level #country level #since 1969" },
+                { name: "National Addiction & HIV Data Archive Program (University of Michigan)", url: "https://www.icpsr.umich.edu/web/pages/NAHDAP/", desc: "#NAHDAP #health behavior #alcohol #drug #HIV #tobacco #risk factor #criminal justice #mental health #divorce #violence #USA #youth #survey #interview" },
+                { isSubheader: true, title: "COVID-19" },
+                { name: "COVID-19 Map (Johns Hopkins University)", url: "https://coronavirus.jhu.edu/map.html", desc: "#COVID-19 #COVID-19 cases #vaccines #daily #multiple countries" },
+                { isSubheader: true, title: "Wellbeing" },
+                { name: "Fragile Families and Child Wellbeing Study (FFCWS)", url: "https://ffcws.princeton.edu/", desc: "#FFCWS #USA #mental & physical health #relationship #parenting behavior #saliva sample #unmarried mother #parent interview #teacher survey #primary caregiver interview #requires registration" }
+            ],
+            "Income and Expenditure": [
+                { isSubheader: true, title: "Income" },
+                { name: "Survey of Consumer Finances (Federal Reserve)", url: "https://www.federalreserve.gov/econres/scfindex.htm", desc: "#SCF #finance #interest rates #bank assets & liabilities #exchange rates #USA" },
+                { name: "Survey of Income and Program Participation (U.S. Census Bureau)", url: "https://www.census.gov/programs-surveys/sipp.html", desc: "#SIPP #income #program participation #economic well-being #family dynamics #assets #health insurance #childcare #food security #USA #panel #household survey #since 1983" },
+                { name: "Panel Study of Income Dynamics (University of Michigan)", url: "https://psidonline.isr.umich.edu/", desc: "#PhID #employment #income #wealth #expenditures #health #marriage #childbearing #child development #philanthropy #education #panel #since 1968" },
+                { isSubheader: true, title: "Expenditure" },
+                { name: "Consumer Expenditures Surveys (U.S. BLS)", url: "https://www.bls.gov/cex/", desc: "#CE #USA #expenditures #income #demographic characteristics #consumer #household #interview survey #diary survey #Consumer Price Index #since 1980" },
+                { name: "Medical Expenditure Panel Survey (AHRQ)", url: "https://meps.ahrq.gov/mepsweb/", desc: "#MEPS #USA #health care cost #medical service usage #health insurance #health conditions #panel #family #individual #since 1996" },
+                { name: "Russia Longitudinal Monitoring Survey (HSE)", url: "https://www.hse.ru/en/rlms/", desc: "#RLMS-HSE #Russia #health status #dietary intake #expenditure #service utilization #panel #household #individual" }
+            ],
+            "Labor": [
+                { name: "Current Population Survey (U.S. Census Bureau & BLS)", url: "https://www.census.gov/programs-surveys/cps.html", desc: "#CPS #income #poverty #health insurance #education #USA #since 1948" },
+                { name: "Quarterly Census of Employment and Wages (U.S. BLS)", url: "https://www.bls.gov/cew/", desc: "#QCEW #employment #wage #establishment #industry #employer #USA #county level #MSA level #state level #national level" },
+                { name: "National Longitudinal Surveys (U.S. BLS)", url: "https://www.bls.gov/nls/", desc: "#NLS #NLSY #education #training #employment #household #income #non-cognitive test #crime #panel #individual #requires registration" },
+                { name: "German Socio-Economic Panel (DIW Berlin)", url: "https://www.diw.de/en/soep", desc: "#SOEP #employment #occupation #earnings #health #satisfaction indicators #Germany #panel #individual #since 1984 #requires registration" },
+                { name: "IZA Data Set Repository", url: "https://idsc.iza.org/", desc: "#job search #training #happiness #multiple countries #multiple datasets #requires registration" },
+                { name: "JILPT Data Archive", url: "https://www.jil.go.jp/institute/archive/index.html", desc: "#job search #recruitment #employment #training #Japan #source in Japanese #multiple datasets #requires registration" }
+            ],
+            "Mobility and Migration": [
+                { isSubheader: true, title: "Mobility" },
+                { name: "Opportunity Insights (Harvard University)", url: "https://opportunityinsights.org/data/", desc: "#education #gender #health #innovation #race #USA #multiple datasets" },
+                { isSubheader: true, title: "Migration" },
+                { name: "Mexican Migration Project (NICHD)", url: "https://mmp.opr.princeton.edu/", desc: "#Mexico #USA #Canada #migrant #border crossing #trip #demographics #economic indicator #children #household #individual #interview #multiple datasets #requires registration #since 1982" }
+            ],
+            "Technology Adoption": [
+                { name: "Historical Cross-Country Technology Adoption Dataset (NBER)", url: "https://www.nber.org/research/data/historical-cross-country-technology-adoption-dataset", desc: "#HCCTA #technology adoption #industrialized countries #country level #panel #1788-2001" },
+                { name: "Historical Transportation Data (Jeremy Atack, Vanderbilt University)", url: "https://my.vanderbilt.edu/jeremyatack/data-downloads/", desc: "#railroad #steamboat #historical data #USA #19th century #multiple datasets" }
+            ],
+            "Industry-Specific": [
+                { isSubheader: true, title: "Energy" },
+                { name: "Electricity Data (United States Energy Information Administration)", url: "https://www.eia.gov/electricity/data.php", desc: "#electricity consumption #electricity price #plant capacity #plant emissions #USA #multiple datasets #state level #plant level #monthly data #annual data" },
+                { isSubheader: true, title: "Housing" },
+                { name: "Housing Data (Zillow)", url: "https://www.zillow.com/research/data/", desc: "#house value forecast #observed rent index #house price #house sales #USA #multiple datasets #monthly data" }
+            ],
+            "Region-Specific": [
+                { isSubheader: true, title: "Asia" },
+                { name: "China Data Access Project (Kellogg School at Northwestern)", url: "https://chinadataaccess.org/", desc: "#China #multiple datasets #microdata" },
+                { name: "China Biographical Database (Harvard University)", url: "https://cbdb.fas.harvard.edu/cbdbapi/public/index.php", desc: "#China #biographical data #spatial distribution #7th century - 19th century" },
+                { name: "Development Data Lab", url: "https://www.devdatalab.org/", desc: "#India #multiple datasets #SHRUG #socioeconomic data #mobility #mining #COVID-19 #judicial data" },
+                { name: "e-stat, Japanese Government Statistics", url: "https://www.e-stat.go.jp/", desc: "#Japan #multiple datasets #population #labor #education #agriculture #trade #business" },
+                { name: "RESAS (Japanese METI)", url: "https://resas.go.jp/", desc: "#Japan #multiple datasets #industries #municipality level" },
+                { isSubheader: true, title: "Europe" },
+                { name: "EUI Library Data Portal (European University Institute)", url: "https://www.eui.eu/Research/Library/ResearchData", desc: "#EU #multiple datasets #macro #micro" },
+                { name: "Electronic Repository of Russian Historical Statistics (RISTAT)", url: "https://ristat.org/", desc: "#Russia #historical data #economic development #population #labor #output #capital #land #region level #1795-2002 (every 50 years)" }
+            ],
+            "Metadata": [
+                { name: "Dataset Search by Google", url: "https://datasetsearch.research.google.com/", desc: "#google search engine #keyword search #multiple datasets" },
+                { name: "openICPSR Repositories", url: "https://www.openicpsr.org/", desc: "#economics #economic history #education #aging #household panel survey #neighborhood environment #firearm safety #COVID-19 #journal data #USA #world #multiple datasets" },
+                { name: "Resources for Economists on the Internet (American Economic Association)", url: "https://www.aeaweb.org/resources/rfe", desc: "#AEA #resources for economists #finance #journal data #replication studies #USA #world #multiple datasets" },
+                { name: "Socioeconomic Data and Applications Center (Columbia University)", url: "https://sedac.ciesin.columbia.edu/", desc: "#agriculture #climate #health #infrastructure #population #poverty #sustainability #urbanization #water #NASA #USA #world #multiple datasets" },
+                { name: "Inter-university Consortium for Political and Social Research (University of Michigan)", url: "https://www.icpsr.umich.edu/", desc: "#public opinion #demographics #employment #economic conditions #attitudes #world #USA #world #multiple datasets" },
+                { name: "IPUMS (University of Minnesota)", url: "https://www.ipums.org/", desc: "#census microdata #labor #health #education #time use #CPS #NHGIS #IHGIS #individual #family #community #since 1790 #USA #world #multiple datasets" },
+                { name: "AidData (William & Mary's Global Research Institute)", url: "https://www.aiddata.org/", desc: "#development aid #finance #public diplomacy #natural resources #SDGs #geospatial data #China #Africa #world #multiple datasets" },
+                { name: "Databases of the Centre d'Études Prospectives et d'Informations Internationales", url: "http://www.cepii.fr/CEPII/en/bdd_modele/bdd_modele.asp", desc: "#macro #international trade #investment #gravity #geography #bilateral city distance #historical data #France #world #multiple datasets" }
+            ]
+        };
+
+        const genreSearch = document.getElementById('genre-search');
+        const genreCards = document.querySelectorAll('.genre-card');
+        const detailsArea = document.getElementById('details-area');
+        const detailsTitle = document.getElementById('details-title');
+        const detailsContent = document.getElementById('details-content');
+
+        genreSearch.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            genreCards.forEach(card => {
+                const category = card.getAttribute('data-category');
+                const categoryLower = category.toLowerCase();
+                const nameMatches = categoryLower.includes(term);
+                const dataSources = categoryData[category] || [];
+                const contentMatches = dataSources.some(src => {
+                    if (src.isSubheader) return src.title.toLowerCase().includes(term);
+                    return (src.name && src.name.toLowerCase().includes(term)) || 
+                           (src.desc && src.desc.toLowerCase().includes(term));
+                });
+                card.style.display = (nameMatches || contentMatches) ? 'flex' : 'none';
+            });
+        });
+
+        genreCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const category = card.getAttribute('data-category');
+                genreCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                detailsTitle.textContent = category;
+                detailsContent.innerHTML = '';
+                const sources = categoryData[category] || [];
+                if (sources.length > 0) {
+                    sources.forEach(src => {
+                        if (src.isSubheader) {
+                            const header = document.createElement('h6');
+                            header.className = 'text-lg font-bold text-navy mt-6 mb-3 border-l-4 border-blue-600 pl-3';
+                            header.textContent = src.title;
+                            detailsContent.appendChild(header);
+                        } else {
+                            const div = document.createElement('div');
+                            div.className = 'border-b border-gray-200 pb-4 mb-4 last:border-0';
+                            div.innerHTML = `<a href="${src.url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 font-bold hover:underline block mb-1">${src.name}</a><p class="text-sm text-gray-600 leading-relaxed">${src.desc}</p>`;
+                            detailsContent.appendChild(div);
+                        }
+                    });
+                } else {
+                    detailsContent.innerHTML = '<p class="text-sm text-gray-500 italic">現在 情報を準備中です。</p>';
+                }
+                detailsArea.style.display = 'block';
+                detailsArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (mainMenu.classList.contains('active') && !menuBtn.contains(e.target) && !mainMenu.contains(e.target)) {
+                mainMenu.classList.remove('active'); updateMenuBars(false);
+            }
+        });
+    </script>
+</body>
+</html>

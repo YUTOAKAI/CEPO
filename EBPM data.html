@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
+     <style>
         body { font-family: 'Noto Sans JP', sans-serif; color: #333; line-height: 1.8; }
         .header-navy { background-color: #003366; }
         .text-navy { color: #003366; }
@@ -95,12 +95,7 @@
             text-align: left;
         }
 
-        /* 既存のバナー等のスタイルも維持 */
-        .banner-box { position: relative; height: 240px; overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; transition: transform 0.3s ease; }
-        @media (min-width: 1024px) { .banner-box { height: 300px; } }
-        .banner-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 1; }
-        .cepo-logo-circle { width: 70px; height: 70px; background: rgba(0, 31, 63, 0.95); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-        
+        /* バナーボックスのスタイル */
         .large-resource-banner {
             position: relative;
             display: flex;
@@ -114,16 +109,69 @@
             max-width: 800px;
             margin: 0 auto;
         }
-        .banner-title {
+        @media (min-width: 768px) {
+            .large-resource-banner { height: 320px; }
+        }
+        .large-resource-banner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .large-resource-banner:hover img {
+            transform: scale(1.05);
+        }
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+            transition: background 0.3s ease;
+        }
+        .large-resource-banner:hover .banner-overlay {
+            background: rgba(0, 0, 0, 0.65);
+        }
+        .banner-content {
             position: relative;
-            z-index: 10;
-            color: #ffffff;
-            font-size: 1.5rem;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+        }
+        .cepo-logo-circle {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 31, 63, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .cepo-logo-circle { width: 90px; height: 90px; }
+        }
+        .banner-text-bottom {
             font-weight: 700;
             letter-spacing: 0.05em;
+            font-size: 1.25rem;
+            line-height: 1.5;
             text-align: center;
+            width: 100%;
         }
-        @media (min-width: 768px) { .banner-title { font-size: 2.25rem; } }
+        @media (min-width: 768px) {
+            .banner-text-bottom { font-size: 2rem; }
+        }
     </style>
 </head>
 <body class="bg-white">
@@ -257,11 +305,10 @@
                         <div id="details-content" class="space-y-4"></div>
                     </div>
                 </div>
-
-                <div class="mt-20 pt-16 border-t border-gray-100">
                     <!-- 復元されたデザインのバナー -->
-                    <a href="#data-sources" class="large-resource-banner group shadow-lg">
-                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80" alt="Social Science Research">
+                   <div class="mt-20 pt-16 border-t border-gray-100">
+                    <a href="https://sites.google.com/view/osipp-data/home?authuser=0" class="large-resource-banner group shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&get=80" alt="Social Science Research">
                         <div class="banner-overlay"></div>
                         <div class="banner-content">
                             <div class="cepo-logo-circle">

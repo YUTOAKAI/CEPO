@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEPO | 政策エビデンス推進研究センター | 大阪大学大学院国際公共政策研究科</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            color: #333;
+            line-height: 1.8;
+        }
+        .header-navy {
+            background-color: #003366; 
+        }
+        .text-navy {
+            color: #003366;
+        }
+        .bg-navy-light {
+            background-color: #f0f4f8;
+        }
+        .border-navy {
+            border-color: #003366;
+        }
+        /* メニューアニメーション */
+        #main-menu {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        #main-menu.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .hero-overlay {
+            background: linear-gradient(rgba(0,51,102,0.7), rgba(0,51,102,0.4));
+        }
+
+        /* スポイラー（アコーディオン）スタイル */
+        .spoiler-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .spoiler-item.active .spoiler-content {
+            max-height: 3000px;
+            padding-bottom: 1.5rem;
+        }
+        .spoiler-item.active .spoiler-icon {
+            transform: rotate(180deg);
+        }
+
+        /* 画像付きバナーボックスのスタイル */
+        .banner-box {
+            position: relative;
+            height: 240px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        @media (min-width: 1024px) {
+            .banner-box {
+                height: 300px;
+            }
+        }
+        .banner-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .banner-box img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 1;
+        }
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 15px;
+        }
+        .cepo-logo-circle {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 31, 63, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .cepo-logo-circle {
+                width: 90px;
+                height: 90px;
+            }
+        }
+        .banner-text-bottom {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            font-size: 0.75rem;
+            padding: 0 12px;
+            line-height: 1.5;
+        }
+        @media (min-width: 768px) {
+            .banner-text-bottom {
+                bottom: 25px;
+                font-size: 1rem;
+            }
+        }
+
+        /* ページ切り替えの表示制御 */
+        .page-view {
+            display: none;
+        }
+        .page-view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- ナビゲーションバー -->
+    <header class="header-navy text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                <div class="border-l-2 border-white/40 pl-3">
+                    <p class="text-[10px] md:text-xs tracking-widest opacity-80 leading-none mb-1 uppercase">Osaka University / OSIPP</p>
+                    <h1 class="text-lg md:text-xl font-bold tracking-tight leading-none">
+                        CEPO <span class="font-normal text-xs md:text-base ml-1 md:ml-2">政策エビデンス推進研究センター</span>
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- 三本線メニューボタン -->
+            <button id="menu-btn" class="p-2 focus:outline-none flex items-center space-x-3 group">
+                <span class="text-xs font-bold tracking-widest hidden sm:inline">MENU</span>
+                <div class="relative w-6 h-5">
+                    <span id="bar1" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-0"></span>
+                    <span id="bar2" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-2"></span>
+                    <span id="bar3" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-4"></span>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- 展開メニュー（8項目） -->
+    <div id="main-menu" class="fixed inset-x-0 bg-slate-900 text-white z-40 border-t border-slate-700 shadow-2xl overflow-y-auto max-h-[85vh]">
+        <div class="container mx-auto px-6 py-12">
+            <nav class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-4">
+                <div class="flex flex-col">
+                    <a href="index.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">01</span> CepoHome
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">02</span> 活動内容
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="publications.html" class="text-sm text-gray-400 hover:text-white transition">Publications</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1nTMQU5SLe1nx_VV4HUmrQhgtqkUtfwCLIfmnBXL6TPw/edit?gid=139518486#gid=139518486" target="_blank" class="text-sm text-gray-400 hover:text-white transition">ランチセミナーのお知らせ</a>
+                        <a href="past lunch seminer.html" class="text-sm text-gray-400 hover:text-white transition">過去のランチセミナー</a>
+                        <a href="discussion papers.html" class="text-sm text-gray-400 hover:text-white transition">Discussion Papers</a>
+                        <a href="research project.html" class="text-sm text-gray-400 hover:text-white transition">研究協力プロジェクト</a>
+                        <a href="awards.html" class="text-sm text-gray-400 hover:text-white transition">受賞</a>
+                        <a href="cepo events.html" class="text-sm text-gray-400 hover:text-white transition">CEPOイベント</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="members.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">03</span> メンバー
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">04</span> 入学を希望される方へ
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="education.html" class="text-sm text-gray-400 hover:text-white transition">OSIPPの教育</a>
+                        <a href="application.html" class="text-sm text-gray-400 hover:text-white transition">応募について</a>
+                        <a href="cepo_support.html" class="text-sm text-gray-400 hover:text-white transition">CEPOサポートサービス</a>
+                        <a href="forscience_enginer.html" class="text-sm text-gray-400 hover:text-white transition">理工系の方へ</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="EBPM data.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">05</span> EBPMのデータ
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="links.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">06</span> リンク集
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+<!-- Main Content Area -->
+     <main>
+        <!-- ヒーローセクション -->
+        <section class="relative h-[300px] md:h-[350px] flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0">
+                <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 hero-overlay"></div>
+            </div>
+            <div class="container mx-auto px-4 relative z-10 text-center text-white">
+                <p class="text-xs md:text-sm font-bold tracking-[0.4em] mb-4 uppercase opacity-80">Useful Resources</p>
+                <h2 class="text-3xl md:text-6xl font-bold mb-4 leading-tight">リンク集</h2>
+                <p class="text-sm md:text-lg font-medium opacity-90">お役立ちリンク集 EBPM研究センター（CEPO）</p>
+            </div>
+        </section>
+
+        <!-- メインコンテンツ -->
+        <section class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 max-w-4xl">
+                
+                <!-- 大阪大学の研究者 -->
+                <div class="mb-20">
+                    <h3 class="text-2xl md:text-3xl section-title">大阪大学でEvidence Based Policy Makingを支える他の研究者</h3>
+                    <div class="space-y-4">
+                        <a href="https://www.econ.osaka-u.ac.jp/en/about/faculty.html" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">大阪大学大学院経済学研究科 全教員リスト</p>
+                            <p class="text-xs text-gray-500 break-all">https://www.econ.osaka-u.ac.jp/en/about/faculty.html</p>
+                        </a>
+                        <a href="https://www.iser.osaka-u.ac.jp/eng/faculty.html" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">大阪大学社会経済研究所 全教員リスト</p>
+                            <p class="text-xs text-gray-500 break-all">https://www.iser.osaka-u.ac.jp/eng/faculty.html</p>
+                        </a>
+                        <a href="https://www.osipp.osaka-u.ac.jp/ja/osipp-faculty/" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">大阪大学大学院国際公共政策研究科 全教員リストと全附属教員</p>
+                            <p class="text-xs text-gray-500 break-all">https://www.osipp.osaka-u.ac.jp/ja/osipp-faculty/</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Google カレンダーセクション -->
+                <div class="mb-20">
+                    <h3 class="text-2xl md:text-3xl section-title">Research Seminars in Osaka</h3>
+                    <div class="calendar-container">
+                        <iframe src="https://calendar.google.com/calendar/embed?src=osakaecon%40gmail.com&amp;ctz=Asia%2FTokyo" style="border: 0" frameborder="0" scrolling="no"></iframe>
+                    </div>
+                </div>
+
+                <!-- 研究発表会（豊中） -->
+                <div class="mb-20">
+                    <h3 class="text-2xl md:text-3xl section-title">大学院豊中キャンパスでの研究発表会</h3>
+                    <div class="space-y-4">
+                        <a href="https://www.osipp.osaka-u.ac.jp/ja/cepo/upcoming-lunch-seminars/" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">CEPOメンバーによるランチセミナー</p>
+                            <p class="text-xs text-gray-500 break-all">https://www.osipp.osaka-u.ac.jp/ja/cepo/upcoming-lunch-seminars/</p>
+                        </a>
+                        <a href="https://machikaneyama-seminar.econ.osaka-u.ac.jp/" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">経済学研究科と国際公共政策研究科の合同セミナー（待兼山セミナー）</p>
+                            <p class="text-xs text-gray-500 break-all">https://machikaneyama-seminar.econ.osaka-u.ac.jp/</p>
+                        </a>
+                        <a href="https://sites.google.com/site/theoeio/Home" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">The Osaka Workshop on Economics of Institutions and Organizations (OEIO)</p>
+                            <p class="text-xs text-gray-500 break-all">https://sites.google.com/site/theoeio/Home</p>
+                        </a>
+                        <a href="https://sites.google.com/site/jinzaihaichinokeizaigaku/" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">人材配置の経済学 研究会</p>
+                            <p class="text-xs text-gray-500 break-all">https://sites.google.com/site/jinzaihaichinokeizaigaku/</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 研究発表会（吹田） -->
+                <div class="mb-20">
+                    <h3 class="text-2xl md:text-3xl section-title">大阪大学吹田キャンパスでの研究発表会</h3>
+                    <div class="space-y-4">
+                        <a href="https://www.iser.osaka-u.ac.jp/seminar/index.html" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">大阪大学社会経済研究所 ISER セミナー</p>
+                            <p class="text-xs text-gray-500 break-all">https://www.iser.osaka-u.ac.jp/seminar/index.html</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- その他の研究会 -->
+                <div class="mb-20">
+                    <h3 class="text-2xl md:text-3xl section-title">その他の研究会 (梅田 中之島)</h3>
+                    <div class="space-y-4">
+                        <a href="http://akainobuo.starfree.jp/kansaipubeco.html" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">関西公共経済学研究会</p>
+                            <p class="text-xs text-gray-500 break-all">http://akainobuo.starfree.jp/kansaipubeco.html</p>
+                        </a>
+                        <a href="https://sites.google.com/site/kansailabor/" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">関西労働研究会</p>
+                            <p class="text-xs text-gray-500 break-all">https://sites.google.com/site/kansailabor/</p>
+                        </a>
+                        <a href="http://www.macro.kier.kyoto-u.ac.jp/" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">マクロ経済学研究会</p>
+                            <p class="text-xs text-gray-500 break-all">http://www.macro.kier.kyoto-u.ac.jp/</p>
+                        </a>
+                        <a href="https://sites.google.com/site/contracttheoryjapan/" target="_blank" rel="noopener noreferrer" class="link-card group">
+                            <p class="font-bold text-navy mb-1 group-hover:text-blue-700 transition">Contract Theory Workshop</p>
+                            <p class="text-xs text-gray-500 break-all">https://sites.google.com/site/contracttheoryjapan/</p>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 学術誌 -->
+                <div class="mb-20">
+                    <h3 class="text-2xl md:text-3xl section-title">大阪大学を拠点とする学術誌</h3>
+                    <div class="space-y-4">
+                        <div class="p-6 bg-slate-50 border border-gray-100 rounded-xl">
+                            <p class="font-bold text-navy mb-2">国際経済評論</p>
+                            <p class="text-sm text-gray-600 leading-relaxed mb-4">
+                                大阪大学社会経済研究所が刊行に協力している学術誌です 研究活動の成果を世界に発信しています
+                            </p>
+                            <a href="https://www.iser.osaka-u.ac.jp/index.html" target="_blank" rel="noopener noreferrer" class="text-blue-600 font-bold hover:underline text-sm inline-flex items-center">
+                                社会経済研究所ウェブサイト
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-20 text-center">
+                    <a href="index.html" class="text-navy font-bold hover:underline inline-flex items-center text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        ホームに戻る
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- フッター (全ページ共通) -->
+    <footer class="bg-slate-900 text-white pt-16 pb-10">
+        <div class="container mx-auto px-4 text-center md:text-left">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12 border-b border-slate-800 pb-12">
+                <div>
+                    <h5 class="text-lg font-bold mb-6 italic tracking-widest">CEPO Contact</h5>
+                    <p class="text-xs md:text-sm opacity-60 leading-loose mb-6">
+                        政策エビデンス推進研究センター<br>
+                        大阪大学大学院国際公共政策研究科 (OSIPP)<br>
+                        〒560-0043 大阪府豊中市待兼山町1-31<br>
+                        Email: 602sec@osipp.osaka-u.ac.jp<br>
+                        Tel: Tel : 06-6850-6111（代表）
+                    </p>
+                    <ul class="text-xs md:text-sm space-y-3">
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/about-osipp/where-we-are/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPPへのアクセス</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/about-osipp/job-openings/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">求人情報</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/osipp-news-and-upcoming-events/osipp-club-page/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPP Clubメールマガジン</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/osipp-links/global-community-office/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPP Global Community Office</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">Related Links</h5>
+                    <ul class="text-xs md:text-sm space-y-3 opacity-60">
+                        <li><a href="https://www.osaka-u.ac.jp/ja" target="_blank" class="hover:text-blue-400 transition">大阪大学 Website</a></li>
+                        <li><a href="https://www.library.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">大阪大学附属図書館</a></li>
+                        <li><a href="https://www.econ.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">経済学研究科・経済学部</a></li>
+                        <li><a href="https://www.law.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">大阪大学法学系ポータルサイト</a></li>
+                        <li><a href="https://www.iser.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">社会経済研究所</a></li>
+                        <li><a href="https://gsss-osaka.net/" target="_blank" class="hover:text-blue-400 transition">大阪大学社会科学系連携ポータル</a></li>
+                        <li><a href="https://ciee.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">Center for International Education and Exchange</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">Centers & Programs</h5>
+                    <ul class="text-xs md:text-sm space-y-3 opacity-60">
+                        <li><a href="#" class="hover:text-blue-400 transition">EBPM研究センター</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/iaforresearchcentre/" target="_blank" class="hover:text-blue-400 transition">大阪大学大学院国際公共政策研究科IAFOR研究センター</a></li>
+                        <li><a href="https://www.cbi.osaka-u.ac.jp/" target="_blank" class="hover:text-blue-400 transition">The Cross-Boundary Innovation (CBI) Program</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/leader/" target="_blank" class="hover:text-blue-400 transition">グローバルリーダーシップ・プログラム（ＧＬＰ）</a></li>
+                        <li><a href="https://www.osaka-u.ac.jp/ja/education/fukusenkou/gm_programs" target="_blank" class="hover:text-blue-400 transition">大学院副専攻プログラム・大学院等高度副プログラム</a></li>
+                        <li><a href="https://esg-irec.jp/" target="_blank" class="hover:text-blue-400 transition">ESGインテグレーション研究教育センター（ESG-IREC）</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/ja/curriculum/double-degree-programs/" target="_blank" class="hover:text-blue-400 transition">ダブルディグリー・プログラム</a></li>
+                    </ul>
+                </div>
+               <div>
+                    <h5 class="text-lg font-bold mb-6">OSIPP公式SNS</h5>
+                    <div class="flex flex-wrap gap-4 justify-start">
+                        <a href="https://www.facebook.com/osipp.nl/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-600 transition" aria-label="Facebook">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/osaka_u_osipp/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-600 transition" aria-label="Instagram">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://x.com/OSIPP_Osaka_U" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gray-600 transition" aria-label="X">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCAY0Gd786_CILQqGwRF1tRQ" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition" aria-label="YouTube">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122-2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                    <div class="mt-6 flex justify-center md:justify-start">
+                        <a href="#" class="block hover:opacity-80 transition bg-white p-1 rounded border border-gray-200">
+                            <img src="スクリーンショット 2026-03-21 102643.png" alt="OSIPP News blog" class="w-[200px] h-auto rounded">
+                        </a>
+                    </div>
+                    <h5 class="text-lg font-bold mt-8 mb-6">The University of Osaka</h5>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="https://www.facebook.com/TheUniversityofOsaka/" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-600 transition" aria-label="Facebook">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/uosaka_1931/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-600 transition" aria-label="Instagram">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://x.com/UOsaka_ja" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gray-600 transition" aria-label="X">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/user/osakaunivofficial" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition" aria-label="YouTube">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122-2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center opacity-30 text-[10px] tracking-widest uppercase">
+                &copy; 2024 CENTER FOR EVIDENCE-BASED POLICY (CEPO), OSIPP.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript：UI制御ロジック -->
+   <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mainMenu = document.getElementById('main-menu');
+        const b1 = document.getElementById('bar1');
+        const b2 = document.getElementById('bar2');
+        const b3 = document.getElementById('bar3');
+
+        function updateMenuBars(isActive) {
+            if (isActive) {
+                b1.style.transform = 'translateY(8px) rotate(45deg)';
+                b2.style.opacity = '0';
+                b3.style.transform = 'translateY(-8px) rotate(-45deg)';
+            } else {
+                b1.style.transform = 'none';
+                b2.style.opacity = '1';
+                b3.style.transform = 'none';
+            }
+        }
+
+        menuBtn.addEventListener('click', () => {
+            const isActive = mainMenu.classList.toggle('active');
+            updateMenuBars(isActive);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (mainMenu.classList.contains('active') && !menuBtn.contains(e.target) && !mainMenu.contains(e.target)) {
+                mainMenu.classList.remove('active');
+                updateMenuBars(false);
+            }
+        });
+    </script>
+</body>
+</html>

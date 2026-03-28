@@ -339,7 +339,25 @@ Please find past event records and reports at the link below.</p>
     </footer>
 
     <script>
-        // Menu Toggle
+        // ページ遷移ロジック
+        function showPage(pageId) {
+            // メニューが開いていれば閉じる
+            const mainMenu = document.getElementById('main-menu');
+            mainMenu.classList.remove('active');
+            updateMenuBars(false);
+
+            // すべてのビューを非表示にする
+            const views = document.querySelectorAll('.page-view');
+            views.forEach(v => v.classList.remove('active'));
+
+            // 指定されたページを表示する
+            document.getElementById(pageId + '-view').classList.add('active');
+
+            // ページ最上部へスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ハンバーガーメニュー制御
         const menuBtn = document.getElementById('menu-btn');
         const mainMenu = document.getElementById('main-menu');
         const b1 = document.getElementById('bar1');
@@ -363,7 +381,7 @@ Please find past event records and reports at the link below.</p>
             updateMenuBars(isActive);
         });
 
-        // Spoiler Control
+        // スポイラー制御
         const spoilers = document.querySelectorAll('.spoiler-toggle');
         spoilers.forEach(toggle => {
             toggle.addEventListener('click', () => {
@@ -372,12 +390,112 @@ Please find past event records and reports at the link below.</p>
             });
         });
 
-        // Close menu on outside click
+        // メニュー外クリックで閉じる
         document.addEventListener('click', (e) => {
             if (!menuBtn.contains(e.target) && !mainMenu.contains(e.target)) {
                 mainMenu.classList.remove('active');
                 updateMenuBars(false);
             }
+        });
+
+        // 出版物テーブルのページネーション制御
+        const rowsPerPage = 10;
+        let currentPubPage = 1;
+        let totalPubPages = 1;
+        let pubRows = [];
+        let filteredPubRows = [];
+
+        function initPagination() {
+            const tbody = document.getElementById('publications-tbody');
+            if (!tbody) return;
+            pubRows = Array.from(tbody.querySelectorAll('tr'));
+            filteredPubRows = [...pubRows];
+            totalPubPages = Math.ceil(filteredPubRows.length / rowsPerPage);
+            
+            const searchInput = document.getElementById('pub-search-input');
+            if (searchInput && !searchInput.dataset.bound) {
+                searchInput.addEventListener('input', handlePubSearch);
+                searchInput.dataset.bound = "true";
+            }
+
+            renderTable(currentPubPage);
+            renderPaginationControls();
+        }
+
+        function handlePubSearch(e) {
+            const query = e.target.value.toLowerCase();
+            filteredPubRows = pubRows.filter(row => {
+                return row.textContent.toLowerCase().includes(query);
+            });
+            currentPubPage = 1;
+            totalPubPages = Math.ceil(filteredPubRows.length / rowsPerPage);
+            
+            renderTable(currentPubPage);
+            renderPaginationControls();
+        }
+
+        function renderTable(page) {
+            pubRows.forEach(row => row.style.display = 'none');
+            
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            
+            filteredPubRows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    row.style.display = '';
+                }
+            });
+        }
+
+        function renderPaginationControls() {
+            const container = document.getElementById('pagination-controls');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (totalPubPages <= 1) return;
+
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = '前へ';
+            prevBtn.className = `px-3 md:px-4 py-1 md:py-2 border rounded transition ${currentPubPage === 1 ? 'text-gray-400 bg-gray-50 cursor-not-allowed' : 'text-navy hover:bg-gray-100'}`;
+            prevBtn.disabled = currentPubPage === 1;
+            prevBtn.onclick = () => {
+                if (currentPubPage > 1) {
+                    currentPubPage--;
+                    renderTable(currentPubPage);
+                    renderPaginationControls();
+                }
+            };
+            container.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPubPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = `px-3 md:px-4 py-1 md:py-2 border rounded transition ${currentPubPage === i ? 'bg-blue-600 text-white font-bold border-blue-600' : 'text-navy hover:bg-gray-100'}`;
+                btn.onclick = () => {
+                    currentPubPage = i;
+                    renderTable(currentPubPage);
+                    renderPaginationControls();
+                };
+                container.appendChild(btn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = '次へ';
+            nextBtn.className = `px-3 md:px-4 py-1 md:py-2 border rounded transition ${currentPubPage === totalPubPages ? 'text-gray-400 bg-gray-50 cursor-not-allowed' : 'text-navy hover:bg-gray-100'}`;
+            nextBtn.disabled = currentPubPage === totalPubPages;
+            nextBtn.onclick = () => {
+                if (currentPubPage < totalPubPages) {
+                    currentPubPage++;
+                    renderTable(currentPubPage);
+                    renderPaginationControls();
+                }
+            };
+            container.appendChild(nextBtn);
+        }
+
+        // ページ読み込み時にページネーションを初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            initPagination();
         });
     </script>
 </body>

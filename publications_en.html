@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEPO | Center for Evidence-Based Policy Making | Osaka School of International Public Policy, Osaka University</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; color: #333; line-height: 1.8; }
+        .header-navy { background-color: #003366; }
+        .text-navy { color: #003366; }
+        .bg-navy-light { background-color: #f0f4f8; }
+        .border-navy { border-color: #003366; }
+        
+        /* Menu Animation */
+        #main-menu { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(-20px); opacity: 0; pointer-events: none; }
+        #main-menu.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        
+        .hero-overlay { background: linear-gradient(rgba(0,51,102,0.7), rgba(0,51,102,0.4)); }
+
+        /* Spoiler Styles */
+        .spoiler-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .spoiler-item.active .spoiler-content { max-height: 5000px; padding-bottom: 1.5rem; }
+        .spoiler-item.active .spoiler-icon { transform: rotate(180deg); }
+
+        /* Banner Box Styles */
+        .banner-box { position: relative; height: 240px; overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        @media (min-width: 1024px) { .banner-box { height: 300px; } }
+        .banner-box:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .banner-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+        .banner-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 1; }
+        .banner-content { position: relative; z-index: 2; text-align: center; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 15px; }
+        .cepo-logo-circle { width: 70px; height: 70px; background: rgba(0, 31, 63, 0.95); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 12px; flex-shrink: 0; }
+        @media (min-width: 768px) { .cepo-logo-circle { width: 90px; height: 90px; } }
+        .banner-text-bottom { position: absolute; bottom: 15px; left: 0; right: 0; font-weight: 500; letter-spacing: 0.02em; font-size: 0.75rem; padding: 0 12px; line-height: 1.5; }
+        @media (min-width: 768px) { .banner-text-bottom { bottom: 25px; font-size: 1rem; } }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; }
+    </style>
+</head>
+<body class="bg-white">
+
+    <!-- Navigation Bar -->
+    <header class="header-navy text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a class="flex items-center space-x-3 cursor-pointer" href="index_en.html">
+                <div class="border-l-2 border-white/40 pl-3">
+                    <p class="text-[10px] md:text-xs tracking-widest opacity-80 leading-none mb-1 uppercase">Osaka University / OSIPP</p>
+                    <h1 class="text-lg md:text-xl font-bold tracking-tight leading-none">
+                        CEPO <span class="font-normal text-xs md:text-base ml-1 md:ml-2">Center for Evidence-Based Policy Making</span>
+                    </h1>
+                </div>
+            </a>
+            <div class="flex items-center space-x-3 md:space-x-5">
+                <!-- Link to Japanese Site -->
+                <a href="index.html" class="flex items-center space-x-2 text-[10px] md:text-xs font-bold tracking-widest border border-white/30 pl-2 pr-3 py-1 rounded hover:bg-white/10 transition uppercase">
+                    <div class="w-4 h-4 rounded-full overflow-hidden flex-shrink-0 shadow-sm border border-white/10">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="50" fill="white"/>
+                            <circle cx="50" cy="50" r="20" fill="#BC002D"/>
+                        </svg>
+                    </div>
+                    <span>Japanese</span>
+                </a>
+                
+                <button id="menu-btn" class="p-2 focus:outline-none flex items-center space-x-3 group">
+                    <span class="text-xs font-bold tracking-widest hidden sm:inline">MENU</span>
+                    <div class="relative w-6 h-5">
+                        <span id="bar1" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-0"></span>
+                        <span id="bar2" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-2"></span>
+                        <span id="bar3" class="absolute block w-6 h-0.5 bg-white transition-all duration-300 top-4"></span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Expanded Menu -->
+    <div id="main-menu" class="fixed inset-x-0 bg-slate-900 text-white z-40 border-t border-slate-700 shadow-2xl overflow-y-auto max-h-[85vh]">
+        <div class="container mx-auto px-6 py-12">
+            <nav class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-4">
+                <div class="flex flex-col">
+                    <a href="index_en.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">01</span> CepoHome
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">02</span> Activities
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="publications_en.html" class="text-sm text-gray-400 hover:text-white transition">Publications</a>
+                        <a href="https://docs.google.com/spreadsheets/d/1nTMQU5SLe1nx_VV4HUmrQhgtqkUtfwCLIfmnBXL6TPw/edit?gid=139518486#gid=139518486" class="text-sm text-gray-400 hover:text-white transition">Lunch Seminar Announcements</a>
+                        <a href="past lunch seminar_en.html" class="text-sm text-gray-400 hover:text-white transition">Past Lunch Seminars</a>
+                        <a href="discussion papers_en.html" class="text-sm text-gray-400 hover:text-white transition">Discussion Papers</a>
+                        <a href="research project_en.html" class="text-sm text-gray-400 hover:text-white transition">Research Cooperation Projects</a>
+                        <a href="awards_en.html" class="text-sm text-gray-400 hover:text-white transition">Awards</a>
+                        <a href="exchange_en.html" class="text-sm text-gray-400 hover:text-white transition">Online Exchange Meetings</a>
+                        <a href="cepo event_en.html" class="text-sm text-gray-400 hover:text-white transition">CEPO Events</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="members_en.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">03</span> Members
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="#" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">04</span> For Prospective Students
+                    </a>
+                    <div class="pl-12 flex flex-col space-y-3 pb-4 pt-2">
+                        <a href="education_en.html" class="text-sm text-gray-400 hover:text-white transition">Education at OSIPP</a>
+                        <a href="application_en.html" class="text-sm text-gray-400 hover:text-white transition">How to Apply</a>
+                        <a href="cepo_support_en.html" class="text-sm text-gray-400 hover:text-white transition">CEPO Support Services</a>
+                        <a href="forscience_enginer_en.html" class="text-sm text-gray-400 hover:text-white transition">For STEM Students</a>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <a href="EBPM data_en.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">05</span> EBPM Data
+                    </a>
+                </div>
+                <div class="flex flex-col">
+                    <a href="links_en.html" class="flex items-center p-4 hover:bg-white/5 rounded transition border-b border-white/10 md:border-none font-bold">
+                        <span class="text-blue-400 mr-3 text-xs">06</span> Links
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Home View Area -->
+    
+   <main>
+        <section class="bg-navy-light py-12 md:py-20 min-h-screen">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <!-- 戻るリンク -->
+                <a href="index_en.html" class="text-navy font-bold flex items-center mb-8 hover:underline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                     Back to home
+                </a>
+                
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+                    <div class="header-navy p-8 md:p-12 text-white">
+                        <p class="text-sm opacity-80 mb-2 tracking-widest uppercase">Center for Evidence-Based Policy Making</p>
+                        <h2 class="text-2xl md:text-4xl font-bold leading-tight">Publications</h2>
+                    </div>
+                    
+                    <div class="p-4 md:p-12">
+                        <!-- 検索窓 -->
+                        <div class="mb-6 flex justify-end">
+                            <input type="text" id="pub-search-input" placeholder="search" class="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 text-sm md:text-base text-gray-700 placeholder-gray-400">
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm md:text-base">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b-2 border-gray-200 text-navy">
+                                        <th class="p-4 font-bold min-w-[80px]">Year</th>
+                                        <th class="p-4 font-bold min-w-[200px]">Author</th>
+                                        <th class="p-4 font-bold min-w-[300px]">Title</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="publications-tbody">
+                                    <!-- 論文データをここに直接記述します -->
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                        <td class="p-4 align-top">2025</td>
+                                        <td class="p-4 align-top text-gray-700">Yusuke Yamaguchi, Takuro Yamashita</td>
+                                        <td class="p-4 align-top font-medium">
+                                            Robust predictions and hard information in the market for lemons<br>
+                                            <a href="https://doi.org/10.1016/j.econlet.2025.112568" target="_blank" rel="noopener noreferrer" class="text-blue-600 text-xs hover:underline break-all">https://doi.org/10.1016/j.econlet.2025.112568</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                        <td class="p-4 align-top">2025</td>
+                                        <td class="p-4 align-top text-gray-700">Masako Ikefuji, Jan R. Magnus, Andrey L. Vasnev</td>
+                                        <td class="p-4 align-top font-medium">
+                                            The role of data and priors in estimating climate sensitivity<br>
+                                            <a href="https://doi.org/10.1093/jrsssc/qlaf047" target="_blank" rel="noopener noreferrer" class="text-blue-600 text-xs hover:underline break-all">https://doi.org/10.1093/jrsssc/qlaf047</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2025</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Naruki Notsu, Haruaki Hirota, Nobuo Akai</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Inter-municipal cooperation and tax enforcement capabilities</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Regional Science and Urban Economics<br>
+                                            <a href="https://doi.org/10.1016/j.regsciurbeco.2025.104137" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.regsciurbeco.2025.104137</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2025</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Nobuo Akai, Takahiro Watanabe</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Endogenous timing of decentralized leadership with heterogeneous spillovers</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Economics of Governance<br>
+                                            <a href="https://doi.org/10.1007/s10101-025-00326-2" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s10101-025-00326-2</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2025</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Daniil Larionov, Hien Pham, Takuro Yamashita, Shuguang Zhu</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">First Best Implementation With Costly Information Acquisition</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Economics & Management Strategy<br>
+                                            <a href="https://doi.org/10.1111/jems.12628" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/jems.12628</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2024</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Masako Ikefuji, Yoshiyasu Ono</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Environmental policies and stagnation in a two-country economy</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Economic Modelling<br>
+                                            <a href="https://doi.org/10.1016/j.econmod.2024.106904" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.econmod.2024.106904</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2024</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Miki Kohara, Ryo Sakamoto</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Why Gender Norms Matter</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Economica<br>
+                                            <a href="https://doi.org/10.1111/ecca.12551" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/ecca.12551</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2024</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Hang Thu Nguyen-Phung, Miki Kohara, Secil Er</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Impact of ICT Development on Female Employment and Household’s Well-being in Vietnam</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Japanese Economic Review<br>
+                                            <a href="https://link.springer.com/article/10.1007/s42973-024-00180-7" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://link.springer.com/article/10.1007/s42973-024-00180-7</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2024</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Takuro Yamashita, Hien Pham</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Auction Design with Heterogeneous Priors</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Games and Economic Behavior<br>
+                                            <a href="https://doi.org/10.1016/j.geb.2024.04.002" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.geb.2024.04.002</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2024</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Takuro Yamashita, Roberto Sarkisian</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Optimal student allocation with peer effects</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Review of Economic Design<br>
+                                            <a href="https://doi.org/10.1007/s10058-024-00349-x" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s10058-024-00349-x</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2024</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Hidekazu Niwa</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">A Fiscal Theory of Central Bank’s Solvency: Perils of the Quantitative and Qualitative Monetary Easing</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Japan and the World Economy<br>
+                                            <a href="https://doi.org/10.1016/j.japwor.2024.101252" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.japwor.2024.101252</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2023</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Masako Ikefuji, Jan R Magnus, Takashi Yamagata</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Revealing priors from posteriors with an application to inflation forecasting in the UK</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            The Econometrics Journal<br>
+                                            <a href="https://doi.org/10.1093/ectj/utad021" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1093/ectj/utad021</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2023</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Kenjiro Hirata, Ayako Suzuki, Katsuya Takii</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">How general is managerial human capital?: Evidence from the Retention of Managers after M&As</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            IZA Journal of Labor Economics<br>
+                                            <a href="https://doi.org/10.2478/izajole-2023-0008" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.2478/izajole-2023-0008</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2023</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Hidekazu Niwa, Eguchi Masataka, Takayuki Tsuruga</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Should the fiscal authority avoid implementation lag?</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Oxford Bulletin of Economics and Statistics<br>
+                                            <a href="https://doi.org/10.1111/obes.12604" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/obes.12604</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2023</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Miki Kohara, Taisei Noda</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The causal effects of working time on mental health: The effectiveness of the law reform raising the overtime wage penalty</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Pacific Economic Review<br>
+                                            <a href="https://doi.org/10.1111/1468-0106.12441" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/1468-0106.12441</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2023</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Hideaki Niwa</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Exiting from Quantitative Easing in an Era of Large Government Debt: Inflation or Default?</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Economics Letters<br>
+                                            <a href="https://doi.org/10.1016/j.econlet.2023.111471" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.econlet.2023.111471</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2022</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Takmuma Kamada</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Family Consequences of Terrorism: The Effects of the Tokyo Subway Sarin Attack on Marital Formation and Dissolution.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Socius<br>
+                                            <a href="https://doi.org/10.1177/23780231221137146" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1177/23780231221137146</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2022</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Nobuo Akai, Takahiro Watanabe</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Electoral outcomes and local public goods provision with ex post interregional transfer</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            International Tax and Public Finance<br>
+                                            <a href="https://doi.org/10.1007/s10797-022-09754-w" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s10797-022-09754-w</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2022</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Nobuo Akai, Tsuyoshi Goto</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Fiscal Common Pool Problem, Municipal Mergers, and Spillovers</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Public Finance Review<br>
+                                            <a href="https://doi.org/10.1177/10911421221105519" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1177/10911421221105519</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2022</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Hirokazu Ishise</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Optimal Long-run Inflation Rate in an Open Economy</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            European Economic Review<br>
+                                            <a href="https://doi.org/10.1016/j.euroecorev.2022.104223" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.euroecorev.2022.104223</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2022</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Miho Sunaga, Koichi Futagami</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Risk Aversion and Longevity in an Overlapping Generations Model</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Macroeconomics<br>
+                                            <a href="https://doi.org/10.1016/j.jmacro.2022.103415" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jmacro.2022.103415</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2021</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Miki Kohara, Yumi Ishikawa, Aya Nushimoto</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Job stress and mental health among social workers: evidence from a field experiment at a public employment support institution in Japan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            The Japanese Economic Review<br>
+                                            <a href="https://doi.org/10.1007/s42973-021-00100-z" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s42973-021-00100-z</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2021</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Botond Kőszegi, George Loewenstein, Takeshi Murooka</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Fragile Self-Esteem</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Review of Economic Studies<br>
+                                            <a href="https://doi.org/10.1093/restud/rdab060" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1093/restud/rdab060</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2021</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Yuko Okajima, Hisakazu Matsushige, Yuwei Ye</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Do ‘Boss Effects’ Exist in Japanese Companies? Evidence from Subordinate–Supervisor Matched Panel Data</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Asian Economic Journal<br>
+                                            <a href="https://doi.org/10.1111/asej.12228" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/asej.12228</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2021</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Tetsuya Matsubayashi, Takuma Kamada</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Great East Japan Earthquake and suicide: the long-term consequences and underlying mechanisms.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Preventive Medicine<br>
+                                            <a href="https://doi.org/10.1016/j.ypmed.2021.106755" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.ypmed.2021.106755</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2021</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Miki Kohara, Yumi Ishikawa</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Outbreak of Infectious Disease and Trust in Government in Asian Countries</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Amsterdam University Press<br>
+                                            <a href="https://doi.org/10.2307/j.ctv2b07tn8.6" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.2307/j.ctv2b07tn8.6</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2021</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Miki Kohara, Bipasha Maity</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Impact of Work-Life Balance Policies on the Time allocation and Fertility Preference of Japanese Women</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of the Japanese and International Economies<br>
+                                            <a href="https://doi.org/10.1016/j.jjie.2021.101134" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jjie.2021.101134</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2020</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Katsuya Takii, Masaru Sasaki, Junmin Wan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Synchronized job transfer and task-specific human capital</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of the Japanese and International Economies<br>
+                                            <a href="https://doi.org/10.1016/j.jjie.2020.101075" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jjie.2020.101075</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2020</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Nobuo Akai, Takahiro Watanabe</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Delegation of Taxation Authority and Multipolicy Commitment in a Decentralized Leadership Model</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Public Finance Review<br>
+                                            <a href="https://doi.org/10.1177/1091142120930389" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1177/1091142120930389</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2020</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">A. Boik, H. Takahashi</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Fighting Bundles: The Effects of Competition on Second-Degree Price Discrimination</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            American Economic Journal<br>
+                                            <a href="https://doi.org/10.1257/mic.20180303" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1257/mic.20180303</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2020</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Hoshino, Tetsuya, Takuma Kamada</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Third-party Policing Approaches to Organized Crime: an Evaluation of the Yakuza Exclusion Ordinances</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Quantitative Criminology<br>
+                                            <a href="https://doi.org/10.1007/s10940-020-09466-6" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s10940-020-09466-6</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2020</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Nguyen, Holly, Takuma Kamada, Anke Ramakers</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">On the Margins: Considering the Relationship between Informal Work and Reoffending</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Justice Quarterly<br>
+                                            <a href="https://doi.org/10.1080/07418825.2020.1778059" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1080/07418825.2020.1778059</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Akai, N., Sato, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Role of Matching Grants as a Commitment Device in the Federation Model with a Repeated Soft Budget Setting</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Economics of Governance<br>
+                                            <a href="https://doi.org/10.1007/s10101-019-00221-7" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s10101-019-00221-7</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Shuhei Kitamura, Nils-Petter Lagerlöf</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Geography and State Fragmentation</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of the European Economic Association<br>
+                                            <a href="https://doi.org/10.1093/jeea/jvz032" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1093/jeea/jvz032</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Kohara, M., Matsushima, M., Ohtake, F.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Effect of Unemployment on Infant Health</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of the Japanese and International Economies<br>
+                                            <a href="https://doi.org/10.1016/j.jjie.2019.03.002" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jjie.2019.03.002</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Tetsuya Matsubayashi, Kelan Lu</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Age and Turnout in Aging Societies</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            International Journal of Public Opinion Research<br>
+                                            <a href="https://doi.org/10.1093/ijpor/edz044" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1093/ijpor/edz044</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Ueda, M., Yoshikawa, K., Matsubayashi, T.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Suicide by Persons with Foreign Background in Japan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            PLoS ONE<br>
+                                            <a href="https://doi.org/10.1371/journal.pone.0211867" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1371/journal.pone.0211867</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Murooka, T., Schwarz, A. Marco</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Consumer Exploitation and Notice Periods</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Economics Letters<br>
+                                            <a href="https://doi.org/10.1016/j.econlet.2018.10.036" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.econlet.2018.10.036</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Yang, Q., Honda, K., Otsuki, T.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Structural Demand Estimation of the Response to Food Safety Regulations in the Japanese Poultry Market</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Eurasian Business Review<br>
+                                            <a href="https://doi.org/10.1007/s40821-018-00117-2" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s40821-018-00117-2</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Ni, B., Tamechika, H., Otsuki, T., Honda, K.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Does ISO14001 Raise Firms’ Awareness of Environmental Protection? The Case of Vietnam</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Environment and Development Economics<br>
+                                            <a href="https://doi.org/10.1017/S1355770X18000396" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1017/S1355770X18000396</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Fujii, Y., Inakura, N.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Factors Widening the Gap Between Hypothetical and Actual Choices Empirical Evidence from Japan s Life Insurance Market</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Asia Pacific Journal of Risk and Insurance<br>
+                                            <a href="https://doi.org/10.1515/apjri-2018-0026" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1515/apjri-2018-0026</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Sunaga, Miho</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">A Schumpeterian growth model with financial intermediaries</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Macroeconomic Dynamics<br>
+                                            <a href="https://doi.org/10.1017/S1365100517000426" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1017/S1365100517000426</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Gavrilova, Evelina, Takuma Kamada, Floris Zoutman</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Is Legal Pot Crippling Mexican Drug Trafficking Organizations The Effect of Medical Marijuana Laws on US Crime</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Economic Journal<br>
+                                            <a href="https://doi.org/10.1111/ecoj.12521" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/ecoj.12521</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2019</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">前田豊 鎌田拓馬</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Synthetic Control Method を用いた個別事例の因果効果の識別</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            理論と方法<br>
+                                            <a href="https://doi.org/10.11218/ojjams.34.78" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.11218/ojjams.34.78</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2018</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Boo, J., Matsubayashi, T., Ueda, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Diurnal Variation in Suicide Timing by Age and Gender Evidence from Japan across 41 Years</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Affective Disorders<br>
+                                            <a href="https://doi.org/10.1016/j.jad.2018.09.030" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jad.2018.09.030</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2018</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Fahey, A. Robert, Matsubayashi, T., Ueda, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Tracking the Werther Effect on Social Media Emotional Responses to Prominent Suicide Deaths on Twitter and Subsequent Increases in Suicide</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Social Science and Medicine<br>
+                                            <a href="https://doi.org/10.1016/j.socscimed.2018.10.004" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.socscimed.2018.10.004</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2018</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Murooka, T., Schwarz, A. Marco</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Timing of Choice Enhancing Policies</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Public Economics<br>
+                                            <a href="https://doi.org/10.1016/j.jpubeco.2017.11.001" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jpubeco.2017.11.001</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2018</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Matsubayashi, T., Yoshikawa, K.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Minimum Legal Drinking Age and Youth Health Evidence from Japan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Studies on Alcohol and Drugs<br>
+                                            <a href="https://doi.org/10.15288/jsad.2018.79.539" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.15288/jsad.2018.79.539</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2018</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">松林 哲也</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">期日前投票制度と投票率</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            選挙研究<br>
+                                            <a href="https://doi.org/10.14854/jaes.33.2_58" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.14854/jaes.33.2_58</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2018</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Takahashi, H.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Strategic design under uncertain evaluations structural analysis of design build auctions</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            The RAND Journal of Economics<br>
+                                            <a href="https://doi.org/10.1111/1756-2171.12246" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/1756-2171.12246</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2017</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Usami, M., Akai, N.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Necessity for Financial Transparency of Airports Toward Efficient Airport Management Examination of Aviation Fuel Tax Allocation</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            International Journal of Aviation Management<br>
+                                            <a href="https://doi.org/10.1504/IJAM.2017.089440" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1504/IJAM.2017.089440</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2017</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Okada, A., Yamauchi, N.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Effectiveness of Social Media in Disaster Fundraising Mobilizing the Public towards Voluntary Actions</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            International Journal of Public Administration in the Digital Age Special Issue on Social Media Adoption Utilization and Consequences in the Nonprofit Sector<br>
+                                            <a href="https://doi.org/10.4018/IJPADA.2017010104" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.4018/IJPADA.2017010104</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2017</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Ueda, M., Mori, K., Matsubayashi, T., Sawada, Y.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Tweeting Celebrity Suicides Users Reaction to Prominent Suicide Deaths on Twitter and Subsequent Increases in Actual Suicides</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Social Science and Medicine<br>
+                                            <a href="https://doi.org/10.1016/j.socscimed.2017.06.032" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.socscimed.2017.06.032</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2017</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Heidhues, P., Koszegi, B., Murooka, T.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Inferior Products and Profitable Deception</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Review of Economic Studies<br>
+                                            <a href="https://doi.org/10.1093/restud/rdw037" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1093/restud/rdw037</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2017</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Sunaga, Miho</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Endogenous growth cycles with financial intermediaries and entrepreneurial innovation</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Macroeconomics<br>
+                                            <a href="https://doi.org/10.1016/j.jmacro.2017.07.001" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jmacro.2017.07.001</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Kohara, M., Kamiya, Y.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Maternal Employment and Food Produced at Home Evidence from Japanese Data</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Review of Economics of the Household<br>
+                                            <a href="https://doi.org/10.1007/s11150-015-9295-8" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s11150-015-9295-8</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Daido, K., Murooka, T.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Team Incentives and Reference Dependent Preferences</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Economics and Management Strategy<br>
+                                            <a href="https://doi.org/10.1111/jems.12166" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/jems.12166</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Asako, Y., Matsubayashi, T., Ueda, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Legislative Term Limits and Government Spending Theory and Evidence from the United States</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            The B.E. Journal of Economic Analysis and Policy<br>
+                                            <a href="https://doi.org/10.1515/bejeap-2015-0216" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1515/bejeap-2015-0216</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Carey Jr. T. E., Martinez Ebers, V., Matsubayashi, T., Paolino, P.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Eres Amigo o Enemigo Contextual Determinants of Latinos Perceived Competition with African Americans</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Urban Affairs Review<br>
+                                            <a href="https://doi.org/10.1177/1078087415574347" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1177/1078087415574347</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Asako, Y., Iida, T., Matsubayashi, T., Ueda, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Dynastic Politicians Theory and Evidence from Japan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Japanese Journal of Political Science<br>
+                                            <a href="http://dx.doi.org/10.2139/ssrn.2118350" target="_blank" class="text-blue-600 hover:underline break-all text-xs">http://dx.doi.org/10.2139/ssrn.2118350</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Matsubayashi, T., Ueda, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Relative Age in School and Suicide among Young Individuals in Japan A Regression Discontinuity Approach</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            PLoS ONE<br>
+                                            <a href="https://doi.org/10.1371/journal.pone.0135349" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1371/journal.pone.0135349</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Ueda, M., Sawada, Y., Matsubayashi, T.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Effectiveness of Installing Physical Barriers for Preventing Railway Suicides and Accidents Evidence from Japan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Affective Disorders<br>
+                                            <a href="https://doi.org/10.1016/j.jad.2015.02.017" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jad.2015.02.017</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Matsubayashi, T., Ueda, M., Yoshikawa, K.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">School and Seasonality in Youth Suicide Evidence from Japan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Epidemiology and Community Health<br>
+                                            <a href="http://dx.doi.org/10.1136/jech-2016-207583" target="_blank" class="text-blue-600 hover:underline break-all text-xs">http://dx.doi.org/10.1136/jech-2016-207583</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Matsubayashi, T., Ueda, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Suicides and Accidents on Birthdays Evidence from Japan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Social Science and Medicine<br>
+                                            <a href="http://dx.doi.org/10.1016/j.socscimed.2016.04.034" target="_blank" class="text-blue-600 hover:underline break-all text-xs">http://dx.doi.org/10.1016/j.socscimed.2016.04.034</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Yasushi Asako, Tetsuya Matsubayashi, Michiko Ueda</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Legislative Term Limits and Government Spending Theory and Evidence from the United States</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            The B.E. Journal of Economic Analysis and Policy<br>
+                                            <a href="https://dx.doi.org/10.2139/ssrn.2105006" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://dx.doi.org/10.2139/ssrn.2105006</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Tony E. Carey Jr., Valerie Martinez Ebers, Tetsuya Matsubayashi, Phillip Paolino</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Eres Amigo o Enemigo Contextual Determinants of Latinos Perceived Competition with African Americans</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            <a href="https://doi.org/10.1177/1078087415574347" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1177/1078087415574347</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Chung, W.Y., Knag, J.S., Matsubayashi, T., Sawada, Y., Ueda, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">The Effectiveness of Platform Screen Doors for the Prevention of Subway Suicides in South Korea</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of Affective Disorders<br>
+                                            <a href="https://doi.org/10.1016/j.jad.2016.01.026" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jad.2016.01.026</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">松林哲也</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">投票環境と投票率</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            選挙研究<br>
+                                            <a href="https://doi.org/10.14854/jaes.32.1_47" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.14854/jaes.32.1_47</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Heidhues, P., Kőszegi, B., Murooka, T.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Exploitative Innovation</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            American Economic Journal Microeconomics<br>
+                                            <a href="http://dx.doi.org/10.1257/mic.20140138" target="_blank" class="text-blue-600 hover:underline break-all text-xs">http://dx.doi.org/10.1257/mic.20140138</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Ishise, H.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Capital Heterogeneity as a Source of Comparative Advantage Putty Clay Technology in a Ricardian Model</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Journal of International Economics<br>
+                                            <a href="https://doi.org/10.1016/j.jinteco.2015.11.004" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1016/j.jinteco.2015.11.004</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2016</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Saito Yumi, Chihiro Shimizu, Tsumtomu Watanabe</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Aging and real estate prices evidence from Japanese and US regional data</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            International Journal of Housing Markets and Analysis<br>
+                                            <a href="https://doi.org/10.1108/IJHMA-11-2014-0053" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1108/IJHMA-11-2014-0053</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2015</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Ishise, H., Matsuo, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Trade in Polarized America the Border Effect between Red States and Blue States</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Economic Inquiry<br>
+                                            <a href="https://doi.org/10.1111/ecin.12177" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1111/ecin.12177</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2015</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Ishise, H., Matsuo, M.</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">U.S. Canada Border Effect between 1993 and 2007 Smaller Less Asymmetrical and Declining</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Review of World Economics<br>
+                                            <a href="https://doi.org/10.1007/s10290-015-0212-2" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1007/s10290-015-0212-2</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="odd:bg-white even:bg-gray-50">
+                                        <td class="p-4 align-top border-b border-gray-100">2015</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-700">Yasushi Asako, Takeshi Iida, Tetsuya Matsubayashi, Michiko Ueda</td>
+                                        <td class="p-4 align-top border-b border-gray-100 font-medium text-gray-800">Dynastic Politicians Theory and Evidence from Japan</td>
+                                        <td class="p-4 align-top border-b border-gray-100 text-gray-600">
+                                            Japanese Journal of Political Science<br>
+                                            <a href="https://doi.org/10.1017/S146810991400036X" target="_blank" class="text-blue-600 hover:underline break-all text-xs">https://doi.org/10.1017/S146810991400036X</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination-controls" class="flex justify-center mt-8 gap-2 text-sm md:text-base"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-white pt-16 pb-10">
+        <div class="container mx-auto px-4 text-center md:text-left">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12 border-b border-slate-800 pb-12">
+                <div>
+                    <h5 class="text-lg font-bold mb-6 italic tracking-widest">CEPO Contact</h5>
+                    <p class="text-xs md:text-sm opacity-60 leading-loose mb-6">
+                        Center for Evidence-Based Policy Making<br>
+                        Osaka School of International Public Policy (OSIPP)<br>
+                        1-31 Machikaneyama, Toyonaka, Osaka 560-0043<br>
+                        Email: 602sec@osipp.osaka-u.ac.jp<br>
+                        Tel: 06-6850-6111
+                    </p>
+                    <ul class="text-xs md:text-sm space-y-3">
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/en/about-osipp/access/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">Access to OSIPP</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/en/about-osipp/employment/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">Job Openings</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/en/osipp-news-and-upcoming-events/osipp-club-page/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPP Club Mail Magazine</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/en/osipp-links/global-community-office/" target="_blank" class="font-bold text-white hover:text-blue-400 transition">OSIPP Global Community Office</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">Related Links</h5>
+                    <ul class="text-xs md:text-sm space-y-3 opacity-60">
+                        <li><a href="https://www.osaka-u.ac.jp/en" target="_blank" class="hover:text-blue-400 transition">Osaka University Website</a></li>
+                        <li><a href="https://www.library.osaka-u.ac.jp/en/" target="_blank" class="hover:text-blue-400 transition">Osaka University Libraries</a></li>
+                        <li><a href="https://www.econ.osaka-u.ac.jp/en/" target="_blank" class="hover:text-blue-400 transition">School of Economics</a></li>
+                        <li><a href="https://www.law.osaka-u.ac.jp/en/" target="_blank" class="hover:text-blue-400 transition">Osaka University Law Portal</a></li>
+                        <li><a href="https://www.iser.osaka-u.ac.jp/eng/" target="_blank" class="hover:text-blue-400 transition">Institute of Social and Economic Research</a></li>
+                         <li><a href="https://gsss-osaka.net/" target="_blank" class="hover:text-blue-400 transition">Osaka University Social Sciences Collaboration Portal</a></li>
+                        <li><a href="https://ciee.osaka-u.ac.jp/en/" target="_blank" class="hover:text-blue-400 transition">Center for International Education and Exchange</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">Centers & Programs</h5>
+                    <ul class="text-xs md:text-sm space-y-3 opacity-60">
+                        <li><a href="#" class="hover:text-blue-400 transition">EBPM Research Center</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/iaforresearchcentre/" target="_blank" class="hover:text-blue-400 transition">OSIPP IAFOR Research Centre</a></li>
+                        <li><a href="https://www.cbi.osaka-u.ac.jp/en/" target="_blank" class="hover:text-blue-400 transition">Cross-Boundary Innovation (CBI) Program</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/leader/en/" target="_blank" class="hover:text-blue-400 transition">Global Leadership Program (GLP)</a></li>
+                        <li><a href="https://www.osaka-u.ac.jp/ja/education/fukusenkou/gm_programs" target="_blank" class="hover:text-blue-400 transition">Graduate minor programs / Advanced minor programs at the graduate level</a></li>
+                        <li><a href="https://esg-irec.jp/en/" target="_blank" class="hover:text-blue-400 transition">ESG Integration Research and Education Center</a></li>
+                        <li><a href="https://www.osipp.osaka-u.ac.jp/en/curriculum/double-degree-programs/" target="_blank" class="hover:text-blue-400 transition">Double Degree Programs</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="text-lg font-bold mb-6">OSIPP Official SNS</h5>
+                    <div class="flex flex-wrap gap-4 justify-start">
+                        <a href="https://www.facebook.com/osipp.nl/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-600 transition" aria-label="Facebook">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/osaka_u_osipp/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-600 transition" aria-label="Instagram">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://x.com/OSIPP_Osaka_U" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gray-600 transition" aria-label="X">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCAY0Gd786_CILQqGwRF1tRQ" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition" aria-label="YouTube">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122-2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                     <div class="mt-6">
+                        <a href="https://news.osipp.osaka-u.ac.jp/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-4 py-2 bg-white/10 border border-white/20 rounded text-[10px] md:text-xs font-bold hover:bg-emerald-600 transition tracking-widest uppercase" aria-label="OSIPP News">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+                            OSIPP News
+                        </a>
+                    </div>
+                    <h5 class="text-lg font-bold mt-8 mb-6">The University of Osaka</h5>
+                    <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <a href="https://www.facebook.com/TheUniversityofOsaka/" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-blue-600 transition" aria-label="Facebook">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                        </a>
+                        <a href="https://www.instagram.com/uosaka_1931/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-pink-600 transition" aria-label="Instagram">
+                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="w-5 h-5"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                        </a>
+                        <a href="https://x.com/UOsaka_ja" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gray-600 transition" aria-label="X">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 24.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.youtube.com/user/osakaunivofficial" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-red-600 transition" aria-label="YouTube">
+                            <svg fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.5 12 3.5 12 3.5s-7.505 0-9.377.55a3.016 3.016 0 0 0-2.122 2.136C0 8.07 0 12 0 12s0 3.93.501 5.814a3.016 3.016 0 0 0 2.122-2.136c1.871.55 9.377.55 9.377.55s7.505 0 9.377-.55a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center opacity-30 text-[10px] tracking-widest uppercase">
+                &copy; 2024 CENTER FOR EVIDENCE-BASED POLICY (CEPO), OSIPP.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // メニュー制御
+        const menuBtn = document.getElementById('menu-btn');
+        const mainMenu = document.getElementById('main-menu');
+        const b1 = document.getElementById('bar1');
+        const b2 = document.getElementById('bar2');
+        const b3 = document.getElementById('bar3');
+
+        function updateMenuBars(isActive) {
+            if (isActive) {
+                b1.style.transform = 'translateY(8px) rotate(45deg)';
+                b2.style.opacity = '0';
+                b3.style.transform = 'translateY(-8px) rotate(-45deg)';
+            } else {
+                b1.style.transform = 'none';
+                b2.style.opacity = '1';
+                b3.style.transform = 'none';
+            }
+        }
+
+        menuBtn.addEventListener('click', () => {
+            const isActive = mainMenu.classList.toggle('active');
+            updateMenuBars(isActive);
+        });
+
+        // ページネーション制御
+        const rowsPerPage = 20;
+        let currentPubPage = 1;
+        let totalPubPages = 1;
+        let pubRows = [];
+        let filteredPubRows = [];
+
+        function initPagination() {
+            const tbody = document.getElementById('publications-tbody');
+            if (!tbody) return;
+            pubRows = Array.from(tbody.querySelectorAll('tr'));
+            filteredPubRows = [...pubRows];
+            updatePaginationState();
+            renderTable(currentPubPage);
+            renderPaginationControls();
+
+            const searchInput = document.getElementById('pub-search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', handlePubSearch);
+            }
+        }
+
+        function handlePubSearch(e) {
+            const query = e.target.value.toLowerCase();
+            filteredPubRows = pubRows.filter(row => {
+                return row.textContent.toLowerCase().includes(query);
+            });
+            currentPubPage = 1;
+            updatePaginationState();
+            renderTable(currentPubPage);
+            renderPaginationControls();
+        }
+
+        function updatePaginationState() {
+            totalPubPages = Math.ceil(filteredPubRows.length / rowsPerPage);
+        }
+
+        function renderTable(page) {
+            pubRows.forEach(row => row.style.display = 'none');
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            filteredPubRows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    row.style.display = '';
+                }
+            });
+        }
+
+        function renderPaginationControls() {
+            const container = document.getElementById('pagination-controls');
+            if (!container) return;
+            container.innerHTML = '';
+            if (totalPubPages <= 1) return;
+
+            for (let i = 1; i <= totalPubPages; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = `px-4 py-2 border rounded transition ${i === currentPubPage ? 'bg-blue-600 text-white font-bold border-blue-600' : 'text-navy hover:bg-gray-100'}`;
+                btn.onclick = () => {
+                    currentPubPage = i;
+                    renderTable(currentPubPage);
+                    renderPaginationControls();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPagination);
+    </script>
+</body>
+</html>
